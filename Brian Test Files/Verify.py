@@ -1,3 +1,8 @@
+#TODO Current node method 
+# I think all these should be pull into a matlab parser class constructed with a file_name and variable name
+# Potentially move out new methods into Matt's old code and see if it works
+# Look at python naming conventions
+
 from scipy import io
 
 '''
@@ -19,40 +24,39 @@ def access_node_data(file_name, node):
   return data
 
 '''
-Returns the layer of the node
+Returns the layer numbe of the node
 '''
 def get_layer_of_node(node_data):
   a = node_data.tolist()
   return a[0]
 
-
-
-#Testing Garbage
-num = 11
-data = access_node_data('Test', num)
-print(get_layer_of_node(data))
-#print(data.index(0))
-
-
-
-
-#TODO Current node method, child nodes of current node method
-
-
-
 '''
-Gets access to the current node. Changes on a 1:1 ratio
-current_node = var[file_name][0,15]['current_node']
-#                               ^controls current node number
-print(current_node[0][0][0][0])
-#                           ^extracts value
-
-
-Gets access to the layer of the current node.
-Changes on a 1:len(child_node) ratio
-layer = var[file_name][0,10]['layer']
-#                         ^extracts layer but sorts in blocks of 5 (0,5,10,15)
-print(layer[0][0][0][0])
-#                    ^extracts value
+Returns array of child nodes for a node
 '''
+def get_child_nodes(file_name, node):
+  node_data = access_node_data(file_name, node)
+  a = node_data.tolist()
+  return a[2]
+
+
+'''Primitive Testing'''
+#Testing globals
+brian_test = 'Test'
+matt_test = 'T'
+num = 15 #must be a number < total_nodes() in both brian_test and matt_test
+
+#Testing Total Nodes
+print('Total nodes in ' + brian_test + ': ' + str(total_nodes(brian_test)))
+print('Total nodes in ' + matt_test + ': ' + str(total_nodes(matt_test)))
+
+#Testing Layer
+matt_data = access_node_data(matt_test, num)
+brian_data = access_node_data(brian_test, num)
+print('Layer for node ' + str(num) + ' in ' + matt_test + ': ' + str(get_layer_of_node(matt_data)))
+print('Layer for node ' + str(num) + ' in ' + brian_test + ': ' + str(get_layer_of_node(brian_data)))
+
+#Testing child nodes
+print('Child nodes for node ' + str(num) + ': ' + str(get_child_nodes(matt_test, num)))
+print('Child nodes for node ' + str(num) + ': ' + str(get_child_nodes(brian_test, num)))
+
 
