@@ -2,6 +2,7 @@
 # I think all these should be pull into a matlab parser class constructed with a file_name and variable name
 # Potentially move out new methods into Matt's old code and see if it works
 # Look at python naming conventions
+# The nodes are not '1' indexed!!! All matlab nodes will be one index off
 
 from scipy import io
 
