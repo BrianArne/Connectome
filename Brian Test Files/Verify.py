@@ -2,9 +2,10 @@
 # I think all these should be pull into a matlab parser class constructed with a file_name and variable name
 # Potentially move out new methods into Matt's old code and see if it works
 # Look at python naming conventions
-# The nodes are not '1' indexed!!! All matlab nodes will be one index off
 
 from scipy import io
+
+MATLAB_OFFSET = 1
 
 '''
 Gets the total number of nodes in the matlab file
@@ -21,7 +22,7 @@ def access_node_data(file_name, node):
 
   file_with_extension = file_name + '.mat'
   var = io.loadmat(file_with_extension, squeeze_me=True)
-  data = var[file_name][node]
+  data = var[file_name][node - MATLAB_OFFSET]
   return data
 
 '''
@@ -57,7 +58,7 @@ print('Layer for node ' + str(num) + ' in ' + matt_test + ': ' + str(get_layer_o
 print('Layer for node ' + str(num) + ' in ' + brian_test + ': ' + str(get_layer_of_node(brian_data)))
 
 #Testing child nodes
-print('Child nodes for node ' + str(num) + ': ' + str(get_child_nodes(matt_test, num)))
-print('Child nodes for node ' + str(num) + ': ' + str(get_child_nodes(brian_test, num)))
+print('Child nodes for node ' + str(num) + ' in ' + matt_test + ': ' + str(get_child_nodes(matt_test, num)))
+print('Child nodes for node ' + str(num) + ' in ' + brian_test + ': ' + str(get_child_nodes(brian_test, num)))
 
 
