@@ -1,4 +1,13 @@
+# TODO
+# I think we can save a lot of processing if we just made a node class with their associated methods and had the MatlabConnectome carry around a container of them
+# Need to write the method converting it to sparse graph
+# Need to write method doing the depth_first_search
+# The mapping out of the matrix needs to be done
+
+
+
 from scipy import io
+
 
 class MatlabConnectome:
 
@@ -11,6 +20,7 @@ class MatlabConnectome:
     self.file_name = file_name
     self.var_name = var_name
     self.all_paths = []
+    self.matrix = None
 
   '''
   Returns array of child nodes for a node
@@ -26,14 +36,12 @@ class MatlabConnectome:
   '''
   Constructs an adjacency matrix and return it
   '''
-  def construct_matrix(self):
-    matrix = [[0] * self.total_nodes()] * self.total_nodes()
-    prev_nodes = 0
-    #for i in range(self.total_nodes()):
-    
-    #prev_nodes += self.layer_lens[i]
-
-    return matrix
+  def construct_empty_matrix(self, layer_max):
+    total_layer_nodes = 0
+    for key in layer_max:
+      total_layer_nodes += layer_max[key]
+    self.matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
+    return self.matrix
 
   '''
   Returns actual node value
@@ -42,6 +50,27 @@ class MatlabConnectome:
     node_data = self.node_data(node)
     a = node_data.tolist()
     return a[1]
+
+  '''
+  Fills matrix from each node's data
+  '''
+  def fill_matrix(self, max_child_node):
+    if self.matrix == None:
+      print("You need to construct an empty matrix first.")
+    else:
+      offset = 0
+      layer = 1
+      for i in range(1, self.total_nodes()+1):
+        current_node = self.current_node(i)
+        child_node = self.child_nodes(i)
+        node_layer = self.layer_of_node(self.node_data(i))
+        if node_layer != layer:
+          offset += max_child_node[layer]
+          layer = node_layer
+        for j in child_node:
+          self.matrix[current_node+offset][j+offset] += 1
+      return self.matrix
+
   
   '''
   Returns all_paths
@@ -54,6 +83,12 @@ class MatlabConnectome:
   '''
   def get_file(self):
     return self.file_name
+
+  '''
+  Returns matrix
+  '''
+  def get_matrix(self):
+    return self.matrix
 
   '''
   Returns variable name
@@ -97,11 +132,11 @@ class MatlabConnectome:
         elif layer == 1 and 1 not in layer_max:
             layer_max[layer] = self.current_node(i)
 
-        if layer+1 in layer_max:
-          if layer_max[layer+1] < max(self.child_nodes(i)):
-            layer_max[layer+1] = max(self.child_nodes(i))
+        if layer in layer_max and layer != 1:
+          if layer_max[layer] < max(self.child_nodes(i)):
+            layer_max[layer] = max(self.child_nodes(i))
         else:
-          layer_max[layer+1] = self.current_node(i)
+          layer_max[layer] = self.current_node(i)
     return layer_max
 
   '''
@@ -130,16 +165,11 @@ class MatlabConnectome:
 ########TESTING#########
 ########################
 
-t_obj = MatlabConnectome("T.mat", "T")
-#t_obj.construct_matrix()
+t_obj = MatlabConnectome("Test.mat", "Test")
 
+max_layer_dict = t_obj.max_child_node()
+print(max_layer_dict)
+t_obj.construct_empty_matrix(max_layer_dict)
 
-
-for i in range(1, t_obj.total_nodes()):
-  print(t_obj.child_nodes(i))
-
-print(t_obj.max_child_node())
-
-print(t_obj.construct_matrix())
-
+matrix = t_obj.fill_matrix(max_layer_dict)
 
