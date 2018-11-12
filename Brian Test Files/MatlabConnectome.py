@@ -5,8 +5,11 @@
 # The mapping out of the matrix needs to be done
 
 
-
+import numpy as np
 from scipy import io
+from scipy.sparse import csgraph
+from scipy.sparse.csgraph import *
+
 
 
 class MatlabConnectome:
@@ -20,7 +23,10 @@ class MatlabConnectome:
     self.file_name = file_name
     self.var_name = var_name
     self.all_paths = []
-    self.matrix = None
+    self.matrix = np.array([])
+    self.hash_lookup = {}
+    self.layer_offset = {}
+    self.nodes = None
 
   '''
   Returns array of child nodes for a node
@@ -68,9 +74,15 @@ class MatlabConnectome:
           offset += max_child_node[layer]
           layer = node_layer
         for j in child_node:
-          self.matrix[current_node+offset][j+offset] += 1
+          self.hash_lookup[current_node] = current_node + offset
+          self.matrix[current_node+offset][j+offset] = 1
       return self.matrix
 
+  '''
+  Converts dense matrix to cs_sparse_graph
+  '''
+  def convert_sparse(self, matrix):
+    return csgraph_from_dense(matrix);
   
   '''
   Returns all_paths
@@ -83,6 +95,18 @@ class MatlabConnectome:
   '''
   def get_file(self):
     return self.file_name
+
+  '''
+  Returns hash_lookup
+  '''
+  def get_hash_lookup(self):
+    return self.hash_lookup
+
+  '''
+  Returns layer_offset
+  '''
+  def get_layer_offset(self):
+    return self.layer_offset
 
   '''
   Returns matrix
@@ -119,6 +143,7 @@ class MatlabConnectome:
 
   '''
   Returns max node value for a layer
+  ***Initializing offset is in here too***
   '''
   def max_child_node(self):
     layer_max = {}
@@ -137,6 +162,14 @@ class MatlabConnectome:
             layer_max[layer] = max(self.child_nodes(i))
         else:
           layer_max[layer] = self.current_node(i)
+
+    offset = 0
+    self.layer_offset[1] = offset
+    for i in range(2, len(layer_max) + 1):
+      if i == 2 : offset += layer_max[1]
+      offset += layer_max[i]
+      self.layer_offset[i] = offset
+       
     return layer_max
 
   '''
@@ -168,8 +201,19 @@ class MatlabConnectome:
 t_obj = MatlabConnectome("Test.mat", "Test")
 
 max_layer_dict = t_obj.max_child_node()
-print(max_layer_dict)
+#print(max_layer_dict)
 t_obj.construct_empty_matrix(max_layer_dict)
 
 matrix = t_obj.fill_matrix(max_layer_dict)
+#print(matrix[11])
+
+print(t_obj.max_child_node())
+print(t_obj.get_layer_offset())
+
+s_graph = t_obj.convert_sparse(matrix)
+#print(depth_first_tree(s_graph, 11, True))
+#print(t_obj.get_hash_lookup())
+#print(matrix[253])
+#print(depth_first_order(s_graph, 11, True, False))
+
 
