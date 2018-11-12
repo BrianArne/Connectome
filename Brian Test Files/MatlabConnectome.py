@@ -1,43 +1,26 @@
 # TODO
-# I think we can save a lot of processing if we just made a node class with their associated methods and had the MatlabConnectome carry around a container of them
-# Need to write the method converting it to sparse graph
-# Need to write method doing the depth_first_search
-# The mapping out of the matrix needs to be done
+# Node class and Node Praser have been implemented
+# Need to clean up Connectome class and make methods work
+# Emphasis on hash table to original nodes
 
-
-import numpy as np
-from scipy import io
+import NodeParser import *
+#import numpy as np
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import *
 
 
-
 class MatlabConnectome:
-
-  MATLAB_OFFSET = 1
 
   '''
   Constructor taking file name and variable inside file to be processed
   '''
-  def __init__(self, file_name, var_name):
-    self.file_name = file_name
-    self.var_name = var_name
+  def __init__(self):
     self.all_paths = []
-    self.matrix = np.array([])
+    self.matrix = None
     self.hash_lookup = {}
     self.layer_offset = {}
     self.nodes = None
 
-  '''
-  Returns array of child nodes for a node
-  '''
-  def child_nodes(self, node):
-    node_data = self.node_data(node)
-    a = node_data.tolist()
-    arr = []
-    for val in a[2]:
-      arr.append(val)
-    return arr
 
   '''
   Constructs an adjacency matrix and return it
@@ -48,14 +31,6 @@ class MatlabConnectome:
       total_layer_nodes += layer_max[key]
     self.matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
     return self.matrix
-
-  '''
-  Returns actual node value
-  '''
-  def current_node(self, node):
-    node_data = self.node_data(node)
-    a = node_data.tolist()
-    return a[1]
 
   '''
   Fills matrix from each node's data
@@ -90,11 +65,6 @@ class MatlabConnectome:
   def get_all_paths(self):
     return self.all_paths
 
-  '''
-  Returns file name
-  '''
-  def get_file(self):
-    return self.file_name
 
   '''
   Returns hash_lookup
@@ -115,12 +85,6 @@ class MatlabConnectome:
     return self.matrix
 
   '''
-  Returns variable name
-  '''
-  def get_var(self):
-    return self.var_name
-
-  '''
   Returns dictionary layers and their lengths
   '''
   def layer_lens(self):
@@ -133,13 +97,6 @@ class MatlabConnectome:
       else:
         layer_dict[layer] = 1
     return layer_dict
-
-  '''
-  Returns the layer number of the node
-  '''
-  def layer_of_node(self, node_data):
-    a = node_data.tolist()
-    return a[0]
 
   '''
   Returns max node value for a layer
@@ -172,13 +129,6 @@ class MatlabConnectome:
        
     return layer_max
 
-  '''
-  Returns a ndarray of node data
-  '''
-  def node_data(self, node):
-    var = io.loadmat(self.file_name, squeeze_me=True)
-    data = var[self.var_name][node - MatlabConnectome.MATLAB_OFFSET]
-    return data
 
   '''
   Prints all_paths to console
@@ -187,33 +137,8 @@ class MatlabConnectome:
     for i in range(len(self.get_all_paths())):
         print("Path",i,self.get_all_paths()[i])
 
-  '''
-  Gets the total number of nodes in the matlab file
-  '''
-  def total_nodes(self):
-      var = io.loadmat(self.file_name, squeeze_me=True)
-      return len(var[self.var_name])
 
 ########################
 ########TESTING#########
 ########################
-
-t_obj = MatlabConnectome("Test.mat", "Test")
-
-max_layer_dict = t_obj.max_child_node()
-#print(max_layer_dict)
-t_obj.construct_empty_matrix(max_layer_dict)
-
-matrix = t_obj.fill_matrix(max_layer_dict)
-#print(matrix[11])
-
-print(t_obj.max_child_node())
-print(t_obj.get_layer_offset())
-
-s_graph = t_obj.convert_sparse(matrix)
-#print(depth_first_tree(s_graph, 11, True))
-#print(t_obj.get_hash_lookup())
-#print(matrix[253])
-#print(depth_first_order(s_graph, 11, True, False))
-
 
