@@ -13,4 +13,7 @@ class Node:
            " Node: " + str(self._current_number) + \
            " Input Nodes: " + str(self._input_nodes)
 
+  def get_layer(self):
+    return self._layer
+
 ####TESTING####
