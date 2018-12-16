@@ -1,4 +1,5 @@
-# TODO Current node method 
+# TODO !Possibly remove this file!
+# Current node method 
 # I think all these should be pull into a matlab parser class constructed with a file_name and variable name
 # Potentially move out new methods into Matt's old code and see if it works
 # Look at python naming conventions

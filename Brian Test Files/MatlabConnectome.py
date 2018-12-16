@@ -29,7 +29,7 @@ class MatlabConnectome:
     self._layer_max_child = {}
     self._nodes = node_list
     self._layer_lens = {} 
-  # End __init__():
+  # End __init__();
 
 
   '''
@@ -40,15 +40,14 @@ class MatlabConnectome:
     for key in self._layer_max_child:
       total_layer_nodes += self._layer_max_child[key]
     self._matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
-    return self._matrix
-  # End construct_empty_matrix():
+  # End construct_empty_matrix();
 
   '''
   Converts dense matrix to cs_sparse_graph
   '''
   def convert_sparse(self, matrix):
     return csgraph_from_dense(matrix);
-  # End convert_sparse():
+  # End convert_sparse();
 
   '''
   Creates offset hash for referencing nodes in matrix
@@ -61,7 +60,7 @@ class MatlabConnectome:
       offset += self._layer_max_child[i]
       self._layer_offset[i] = offset
     return
-  # End create_offset_hash():
+  # End create_offset_hash();
 
   '''
   Fills matrix from each node's data
@@ -79,8 +78,7 @@ class MatlabConnectome:
         for j in n._input_nodes:
           self._hash_lookup[n._node_number] = n._node_number + offset
           self._matrix[n._node_number + offset][j+offset] = 1
-      return self._matrix
-  # End fill_matrix():
+  # End fill_matrix();
 
   '''
   Returns dictionary layers and their lengths
@@ -92,7 +90,7 @@ class MatlabConnectome:
       else:
         self._layer_lens[i._layer] = 1
     return self._layer_lens
-  # End layer_lens():
+  # End layer_lens();
 
   '''
   Returns max node value for a layer
@@ -104,7 +102,7 @@ class MatlabConnectome:
       self._layer_max_child[i._layer] = max(i._input_nodes)
     self.create_offset_hash()
     return self._layer_max_child
-  # End max_child_node():
+  # End max_child_node();
 
   '''
   Prints all_paths to console
@@ -112,22 +110,4 @@ class MatlabConnectome:
   def print_all_paths(self):
     for i in range(len(self.get_all_paths())):
         print("Path",i,self.get_all_paths()[i])
-  # End print_all_paths():
-
-
-########################
-########TESTING#########
-########################
-parsed_data = NodeParser("Test.mat", "Test")
-parsed_data.load_data()
-parsed_data.construct_node_container()
-connect = MatlabConnectome(parsed_data._node_container)
-print(connect.layer_lens())
-print(connect.max_child_node())
-connect.construct_empty_matrix()
-matrix = connect.fill_matrix();
-for i in matrix:
-  print i
-#print(connect._matrix)
-for i in range(1, len(connect._nodes)+1):
-  print(connect._hash_lookup[i])
+  # End print_all_paths();
