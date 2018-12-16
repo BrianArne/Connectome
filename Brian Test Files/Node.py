@@ -20,3 +20,5 @@ class Node:
            " Node: " + str(self._node_number) + \
            " Input Nodes: " + str(self._input_nodes)
   # End __str__();
+
+#End Node Class;

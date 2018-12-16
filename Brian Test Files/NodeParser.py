@@ -63,3 +63,5 @@ class NodeParser:
     self._data = io.loadmat(self._file_name, squeeze_me = True)
     self._total_nodes = len(self._data[self._var_name])
   # End load_data();
+
+# End NodeParser Class;

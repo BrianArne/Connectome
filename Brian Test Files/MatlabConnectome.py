@@ -1,21 +1,15 @@
 # TODO
-# Node class and Node Praser have been implemented
-# Need to clean up Connectome class and make methods work
-# Emphasis on hash table to original nodes
+# Map hash_lookup to the actual matrix data
 
-from Node import Node
-from NodeParser import NodeParser
 import numpy as np
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import *
-
 
 '''
 The MatlabConnectome class is designed to turn a node container supplied 
 on initialization into a sparse csgraph allow a depth first search
 to be run on the sparse csgraph
 '''
-
 class MatlabConnectome:
 
   '''
@@ -36,6 +30,8 @@ class MatlabConnectome:
   Constructs an adjacency matrix and return it
   '''
   def construct_empty_matrix(self):
+    self.layer_lens()
+    self.max_child_node()
     total_layer_nodes = 0
     for key in self._layer_max_child:
       total_layer_nodes += self._layer_max_child[key]
@@ -59,25 +55,22 @@ class MatlabConnectome:
       if i == 2 : offset += self._layer_max_child[1]
       offset += self._layer_max_child[i]
       self._layer_offset[i] = offset
-    return
   # End create_offset_hash();
 
   '''
   Fills matrix from each node's data
   '''
   def fill_matrix(self):
-    if self._matrix == None:
-      print("You need to construct an empty matrix first.")
-    else:
-      offset = 0
-      layer = 1
-      for n in self._nodes:
-        if n._layer != layer:
-          offset += self._layer_max_child[layer]
-          layer = n._layer
-        for j in n._input_nodes:
-          self._hash_lookup[n._node_number] = n._node_number + offset
-          self._matrix[n._node_number + offset][j+offset] = 1
+    self.construct_empty_matrix()
+    offset = 0
+    layer = 1
+    for n in self._nodes:
+      if n._layer != layer:
+        offset += self._layer_max_child[layer]
+        layer = n._layer
+      for j in n._input_nodes:
+        self._hash_lookup[n._node_number] = n._node_number + offset
+        self._matrix[n._node_number + offset][j+offset] = 1
   # End fill_matrix();
 
   '''
@@ -89,7 +82,6 @@ class MatlabConnectome:
         self._layer_lens[i._layer] += 1
       else:
         self._layer_lens[i._layer] = 1
-    return self._layer_lens
   # End layer_lens();
 
   '''
@@ -101,7 +93,6 @@ class MatlabConnectome:
         continue
       self._layer_max_child[i._layer] = max(i._input_nodes)
     self.create_offset_hash()
-    return self._layer_max_child
   # End max_child_node();
 
   '''
@@ -111,3 +102,5 @@ class MatlabConnectome:
     for i in range(len(self.get_all_paths())):
         print("Path",i,self.get_all_paths()[i])
   # End print_all_paths();
+
+# End MatlabConnectome Class;
