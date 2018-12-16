@@ -1,14 +1,19 @@
 from scipy import io
 from Node import *
 
+'''
+The NodeParser class is responsible for constructing a node container.
+In the future, this class will be implemented for varying file inputs.
+'''
 class NodeParser:
 
   def __init__(self, file_name, var_name):
     self._file_name = file_name
     self._var_name = var_name
-    self._data = io.loadmat(file_name, squeeze_me = True)
-    self._total_nodes = len(self._data[var_name])
+    self._data = None
+    self._total_nodes = None
     self._node_container = []
+  # End __init__();
 
   '''
   Returns a container with all nodes and their data
@@ -18,6 +23,7 @@ class NodeParser:
       node = Node(self.get_data_layer(i), self.get_data_current_node(i), self.get_data_input_nodes(i))
       self._node_container.append(node)
     return self._node_container
+  # End construct_node_container();
 
   '''
   Reurns layer of node input parameter
@@ -26,6 +32,7 @@ class NodeParser:
     node_data = self._data[self._var_name][node]
     arr = node_data.tolist()
     return arr[0]
+  # End get_data_layer();
 
   '''
   Returns the number/id of node input parameter
@@ -34,6 +41,7 @@ class NodeParser:
     node_data = self._data[self._var_name][node]
     arr = node_data.tolist()
     return arr[1]
+  # End get_data_current_node();
 
   '''
   Returns list of input nodes for node input parameter
@@ -45,13 +53,12 @@ class NodeParser:
     for val in a[2]:
       arr.append(val)
     return arr
+  # End get_data_input_nodes();
 
-
-
-####TESTING####
-'''
-test = NodeParser("Test.mat", "Test")
-cont = test.construct_node_container()
-for i in cont:
-  print(i)
-'''
+  '''
+  Reads in file data to _data
+  '''
+  def load_data(self):
+    self._data = io.loadmat(self._file_name, squeeze_me = True)
+    self._total_nodes = len(self._data[self._var_name])
+  # End load_data();

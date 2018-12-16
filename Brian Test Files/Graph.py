@@ -26,8 +26,8 @@ d_graph = np.array([
     [0,0,0,0,0,0,0,1], #6
     [0,0,0,0,0,0,0,0]])#7
 s_graph = csgraph_from_dense(d_graph)
-for i in range(7):
-    print(depth_first_order(s_graph, i, True, True)[1])
+for i in range(len(d_graph[0])):
+    print(depth_first_order(s_graph, i, True, True))
 #print(sys.getsizeof(s_graph))
 #print(sys.getsizeof(d_graph))
 
