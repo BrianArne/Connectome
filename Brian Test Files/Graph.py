@@ -16,14 +16,18 @@ s_graph = csgraph_from_dense(d_graph)
 
 
 d_graph = np.array([
-    [0,0,1,0,1,0],
-    [0,0,0,0,0,0],
-    [0,1,0,0,0,0],
-    [0,0,0,0,0,1],
-    [0,0,0,0,0,0],
-    [0,0,0,0,0,0]])
+   # 0,1,2,3,4,5,6,7
+    [0,0,1,0,1,0,0,0], #0
+    [0,0,0,0,0,0,0,0], #1
+    [0,0,0,0,0,0,0,0], #2
+    [0,0,0,0,0,1,0,0], #3
+    [0,0,0,0,0,1,1,0], #4
+    [0,0,0,0,0,0,0,0], #5
+    [0,0,0,0,0,0,0,1], #6
+    [0,0,0,0,0,0,0,0]])#7
 s_graph = csgraph_from_dense(d_graph)
-print(depth_first_tree(s_graph, 0, True))
+for i in range(7):
+    print(depth_first_order(s_graph, i, True, True)[1])
 #print(sys.getsizeof(s_graph))
 #print(sys.getsizeof(d_graph))
 
