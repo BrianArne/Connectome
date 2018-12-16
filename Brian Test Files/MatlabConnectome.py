@@ -77,8 +77,8 @@ class MatlabConnectome:
           offset += self._layer_max_child[layer]
           layer = n._layer
         for j in n._input_nodes:
-          self._hash_lookup[n._current_number] = n._current_number + offset
-          self._matrix[n._current_number + offset][j+offset] = 1
+          self._hash_lookup[n._node_number] = n._node_number + offset
+          self._matrix[n._node_number + offset][j+offset] = 1
       return self._matrix
   # End fill_matrix():
 

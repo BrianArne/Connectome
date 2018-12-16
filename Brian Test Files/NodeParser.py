@@ -3,7 +3,8 @@ from Node import *
 
 '''
 The NodeParser class is responsible for constructing a node container.
-In the future, this class will be implemented for varying file inputs.
+In the future, this class will be implemented for varying file inputs by 
+implementing load_data()
 '''
 class NodeParser:
 
