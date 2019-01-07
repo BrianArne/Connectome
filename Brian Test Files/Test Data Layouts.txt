@@ -1,0 +1,46 @@
+**SetOne**
+Layer 1:
+  node_number: 1
+  i_nodes: [1;7]
+
+Layer 2:
+  node_number: 1
+  i_nodes: [30]
+
+  node_number: 7
+  i_nodes: [33;40]
+
+Layer 3:
+  node_number: 30
+  i_nodes: [42]
+
+  node_number: 33
+  i_nodes: [70] 
+
+  node_number: 40
+  i_nodes: [100]
+
+
+
+
+**SetTwo**
+Layer 1:
+  node_number: 1  
+  i_nodes: [4]
+
+  node_number: 2
+  i_nodes: [10]
+
+Layer 2:
+  node_number: 4
+  i_nodes: [12]
+
+  node_number: 10
+  i_nodes: [15]
+
+Layer 3:
+  node_number: 12
+  i_nodes: []
+
+  node_number: 15
+  i_nodes: [1;2]
