@@ -51,8 +51,11 @@ class NodeParser:
     node_data = self._data[self._var_name][node]
     a = node_data.tolist()
     arr = []
-    for val in a[2]:
-      arr.append(val)
+    if type(a[2]) == int:
+      arr.append(a[2])
+    else:
+      for val in a[2]:
+        arr.append(val)
     return arr
   # End get_data_input_nodes();
 
