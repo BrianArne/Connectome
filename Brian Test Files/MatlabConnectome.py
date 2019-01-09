@@ -1,5 +1,4 @@
-# TODO
-# Map hash_lookup to the actual matrix data
+# TODO Combine max_layer_node() and final_max_inode() to be more efficient
 
 import numpy as np
 from scipy.sparse import csgraph
@@ -16,13 +15,10 @@ class MatlabConnectome:
   Constructor taking file name and variable inside file to be processed
   '''
   def __init__(self, node_list):
-    self._all_paths = []
-    self._matrix = None
     self._hash_lookup = {}
-    self._layer_offset = {}
-    self._layer_max_child = {}
+    self._matrix = None
+    self._max_layer_node = {} 
     self._nodes = node_list
-    self._layer_lens = {} 
   # End __init__();
 
 
@@ -30,11 +26,10 @@ class MatlabConnectome:
   Constructs an adjacency matrix and return it
   '''
   def construct_empty_matrix(self):
-    self.layer_lens()
-    self.max_child_node()
+    self.max_layer_node()
     total_layer_nodes = 0
-    for key in self._layer_max_child:
-      total_layer_nodes += self._layer_max_child[key]
+    for key in self._max_layer_node:
+      total_layer_nodes += self._max_layer_node[key]
     self._matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
   # End construct_empty_matrix();
 
@@ -46,62 +41,58 @@ class MatlabConnectome:
   # End convert_sparse();
 
   '''
-  Creates offset hash for referencing nodes in matrix
-  '''
-  def create_offset_hash(self):
-    offset = 0
-    self._layer_offset[1] = offset
-    for i in range(2, len(self._layer_max_child) + 1):
-      if i == 2 : offset += self._layer_max_child[1]
-      offset += self._layer_max_child[i]
-      self._layer_offset[i] = offset
-  # End create_offset_hash();
-
-  '''
   Fills matrix from each node's data
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
-    offset = 0
+    print("Max layer node: ", self._max_layer_node)
+    # Old_offest represents current layer being processed
+    old_offset = 0
+    # Offset represents the i_node layer below current layer
+    offset = self._max_layer_node[1]
     layer = 1
     for n in self._nodes:
       if n._layer != layer:
-        offset += self._layer_max_child[layer]
+        old_offset += offset
+        offset += self._max_layer_node[layer + 1]
         layer = n._layer
       for j in n._input_nodes:
-        self._hash_lookup[n._node_number + offset] = n._node_number
-        #self._hash_lookup[n._node_number] = n._node_number + offset
-        self._matrix[n._node_number + offset][j+offset] = 1
+        print("Offset: ", offset)
+        if layer != 1:
+          self._hash_lookup[n] = n._node_number + old_offset
+          self._matrix[n._node_number + old_offset][j + offset] = 1
+        else:
+          self._hash_lookup[n] = n._node_number
+          self._matrix[n._node_number][j + offset] = 1
   # End fill_matrix();
 
   '''
-  Returns dictionary layers and their lengths
+  Returns dictionary layers and their highest node number
   '''
-  def layer_lens(self):
+  def max_layer_node(self):
     for i in self._nodes:
-      if i._layer in self._layer_lens:
-        self._layer_lens[i._layer] += 1
+      if i._layer in self._max_layer_node:
+        if i._node_number > self._max_layer_node[i._layer]:
+          self._max_layer_node[i._layer] = i._node_number
       else:
-        self._layer_lens[i._layer] = 1
-  # End layer_lens();
+        self._max_layer_node[i._layer] = i._node_number
+    self.final_max_inode()
+  # End max_layer_node();
 
   '''
-  Returns max node value for a layer
+  Sets highest final layer max i_node value
   '''
-  def max_child_node(self):
+  def final_max_inode(self):
+    holder = {}
     for i in self._nodes:
-      if i._layer in self._layer_max_child:
+      if i._layer < max(self._max_layer_node.keys()):
         continue
-      self._layer_max_child[i._layer] = max(i._input_nodes)
-    self.create_offset_hash()
-  # End max_child_node();
-
-  '''
-  Prints all_paths to console
-  '''
-  def print_all_paths(self):
-    for i in range(len(self.get_all_paths())):
-        print("Path",i,self.get_all_paths()[i])
-  # End print_all_paths();
+      if i._layer in holder:
+        if max(i._input_nodes) > holder[i._layer]:
+          holder[i._layer] = max(i._input_nodes)
+        continue
+      holder[i._layer] = max(i._input_nodes)
+    self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
+  # End final_max_inode();
 
 # End MatlabConnectome Class;
