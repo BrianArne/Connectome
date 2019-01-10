@@ -1,4 +1,7 @@
 # TODO Combine max_layer_node() and final_max_inode() to be more efficient
+#      Check comments and change as necessary
+#      Look again at how depth_first_order works
+#      Implement way to apply hash look up with data from depth_first_order
 
 import numpy as np
 from scipy.sparse import csgraph
@@ -45,25 +48,27 @@ class MatlabConnectome:
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
-    print("Max layer node: ", self._max_layer_node)
     # Old_offest represents current layer being processed
     old_offset = 0
     # Offset represents the i_node layer below current layer
     offset = self._max_layer_node[1]
+
     layer = 1
     for n in self._nodes:
+      # Checks for layer change, changes offsets if there is layer change
       if n._layer != layer:
-        old_offset += offset
+        old_offset = offset
         offset += self._max_layer_node[layer + 1]
         layer = n._layer
+      
+      # Gives nodes a hash_lookup value
+      if layer != 1:
+        self._hash_lookup[n] = n._node_number + old_offset
+      else:
+        self._hash_lookup[n] = n._node_number
+
       for j in n._input_nodes:
-        print("Offset: ", offset)
-        if layer != 1:
-          self._hash_lookup[n] = n._node_number + old_offset
-          self._matrix[n._node_number + old_offset][j + offset] = 1
-        else:
-          self._hash_lookup[n] = n._node_number
-          self._matrix[n._node_number][j + offset] = 1
+        self._matrix[self._hash_lookup[n]][j + offset] = 1
   # End fill_matrix();
 
   '''
@@ -91,7 +96,8 @@ class MatlabConnectome:
         if max(i._input_nodes) > holder[i._layer]:
           holder[i._layer] = max(i._input_nodes)
         continue
-      holder[i._layer] = max(i._input_nodes)
+      if len(i._input_nodes) > 0:
+        holder[i._layer] = max(i._input_nodes)
     self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
   # End final_max_inode();
 
