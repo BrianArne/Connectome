@@ -38,13 +38,6 @@ class MatlabConnectome:
   # End construct_empty_matrix();
 
   '''
-  Converts dense matrix to cs_sparse_graph
-  '''
-  def convert_sparse(self, matrix):
-    return csgraph_from_dense(matrix);
-  # End convert_sparse();
-
-  '''
   Fills matrix with node connectivity
   '''
   def fill_matrix(self):
