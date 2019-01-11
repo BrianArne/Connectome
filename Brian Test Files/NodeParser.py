@@ -4,10 +4,14 @@ from Node import *
 '''
 The NodeParser class is responsible for constructing a node container.
 In the future, this class will be implemented for varying file inputs by 
-implementing load_data()
+implementing load_data() via abstract NodeParser class. Currently abstract class is
+not implemented.
 '''
 class NodeParser:
 
+  '''
+  Constructor. Might be matlab specific currently with argument requirements
+  '''
   def __init__(self, file_name, var_name):
     self._file_name = file_name
     self._var_name = var_name

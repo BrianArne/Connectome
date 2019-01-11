@@ -39,8 +39,20 @@ Layer 2:
   i_nodes: [15]
 
 Layer 3:
-  node_number: 12
-  i_nodes: []
 
   node_number: 15
   i_nodes: [1;2]
+
+
+**SetThree**
+Layer 1:
+  node_number: 1
+  i_nodes: [1;5]
+
+Layer 2:
+  node_number: 1
+  i_nodes: [9]
+
+Layer 2:
+  node_number: 5
+  i_nodes: [2]

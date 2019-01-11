@@ -1,7 +1,8 @@
-# TODO Combine max_layer_node() and final_max_inode() to be more efficient
-#      Check comments and change as necessary
-#      Look again at how depth_first_order works
-#      Implement way to apply hash look up with data from depth_first_order
+# TODO
+#     - Combine max_layer_node() and final_max_inode() to be more efficient
+#     - Check comments and change as necessary
+#     - Implement way to apply hash look up with data from depth_first_order
+#     - Rename classes to better reflect what they do
 
 import numpy as np
 from scipy.sparse import csgraph
@@ -9,7 +10,7 @@ from scipy.sparse.csgraph import *
 
 '''
 The MatlabConnectome class is designed to turn a node container supplied 
-on initialization into a sparse csgraph allow a depth first search
+on initialization into a sparse csgraph to allow a depth first search
 to be run on the sparse csgraph
 '''
 class MatlabConnectome:
@@ -26,7 +27,7 @@ class MatlabConnectome:
 
 
   '''
-  Constructs an adjacency matrix and return it
+  Constructs an adjacency matrix
   '''
   def construct_empty_matrix(self):
     self.max_layer_node()
@@ -44,10 +45,11 @@ class MatlabConnectome:
   # End convert_sparse();
 
   '''
-  Fills matrix from each node's data
+  Fills matrix with node connectivity
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
+
     # Old_offest represents current layer being processed
     old_offset = 0
     # Offset represents the i_node layer below current layer
@@ -67,12 +69,13 @@ class MatlabConnectome:
       else:
         self._hash_lookup[n] = n._node_number
 
+      # Inputs node with hash_lookup value to matrix
       for j in n._input_nodes:
         self._matrix[self._hash_lookup[n]][j + offset] = 1
   # End fill_matrix();
 
   '''
-  Returns dictionary layers and their highest node number
+  Returns dictionary with layers and their highest node number for offset calculation
   '''
   def max_layer_node(self):
     for i in self._nodes:
@@ -85,7 +88,7 @@ class MatlabConnectome:
   # End max_layer_node();
 
   '''
-  Sets highest final layer max i_node value
+  Sets highest final layer (input layer) max i_node value for offset calculation
   '''
   def final_max_inode(self):
     holder = {}

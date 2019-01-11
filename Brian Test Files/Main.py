@@ -12,7 +12,6 @@ var = input("Which test file? " +
     "3) SetThree "+ 
     "4) Test "+ 
     "5) T ")
-
 if var == 1:
   file_name = "SetOne.mat"
   var_name = "SetOne"
@@ -33,6 +32,7 @@ else:
   file_name = "SetOne.mat"
   var_name = "SetOne"
 
+# File loaded in
 parsed_data = NodeParser(file_name, var_name)
 parsed_data.load_data()
 parsed_data.construct_node_container()
@@ -41,20 +41,20 @@ parsed_data.construct_node_container()
 connect = MatlabConnectome(parsed_data._node_container)
 connect.fill_matrix();
 
-# csgraph depth_first_search
+# csgraph depth_first_search run on matrix from MatlabConnectome
 s_graph = csgraph_from_dense(connect._matrix)
+print("***Print of compressed graph connectivity***")
 print(s_graph)
+
+# Printing each node's connectivity
+print("")
+print("***Printing each node and its connectivity***")
 for node in connect._nodes:
-    print(node)
-    print(depth_first_order(s_graph, connect._hash_lookup[node], True, True)[1])
+    print(str(node), connect._hash_lookup[node])
+    print(depth_first_order(s_graph, connect._hash_lookup[node], True, True))
     print('\n')
 
-'''
-# Display matrix array
-for i in connect._matrix:
-  print i
-'''
-
-
+# Prints size of matrix
+print("***Printing size of each matrix***")
 print("Size of matrix uncompressed: ", sys.getsizeof(connect._matrix))
 print("Size of matrix compressed: ", sys.getsizeof(s_graph))
