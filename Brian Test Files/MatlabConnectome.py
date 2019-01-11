@@ -68,7 +68,7 @@ class MatlabConnectome:
   # End fill_matrix();
 
   '''
-  Returns dictionary with layers and their highest node number for offset calculation
+  Init. _max_layer_node dictionary with layers and their highest node number for offset calculation
   '''
   def max_layer_node(self):
     for i in self._nodes:
