@@ -1,6 +1,6 @@
 import sys
 from MatlabConnectome import MatlabConnectome
-from NodeParser import NodeParser
+from MatlabNodeParser import MatlabNodeParser
 
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense, depth_first_tree
@@ -33,7 +33,7 @@ else:
   var_name = "SetOne"
 
 # File loaded in
-parsed_data = NodeParser(file_name, var_name)
+parsed_data = MatlabNodeParser(file_name, var_name)
 parsed_data.load_data()
 parsed_data.construct_node_container()
 
