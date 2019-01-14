@@ -1,5 +1,5 @@
 import sys
-from MatlabConnectome import MatlabConnectome
+from Connectome import Connectome
 from MatlabNodeParser import MatlabNodeParser
 
 from scipy.sparse import csgraph
@@ -37,11 +37,11 @@ parsed_data = MatlabNodeParser(file_name, var_name)
 parsed_data.load_data()
 parsed_data.construct_node_container()
 
-# Initialize MatlabConnectome matrix
-connect = MatlabConnectome(parsed_data._node_container)
+# Initialize Connectome matrix
+connect = Connectome(parsed_data._node_container)
 connect.fill_matrix();
 
-# csgraph depth_first_search run on matrix from MatlabConnectome
+# csgraph depth_first_search run on matrix from Connectome
 s_graph = csgraph_from_dense(connect._matrix)
 print("***Print of compressed graph connectivity***")
 print(s_graph)

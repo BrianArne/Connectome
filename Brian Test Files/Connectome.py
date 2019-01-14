@@ -9,11 +9,11 @@ from scipy.sparse import csgraph
 from scipy.sparse.csgraph import *
 
 '''
-The MatlabConnectome class is designed to turn a node container supplied 
+The Connectome class is designed to turn a node container supplied 
 on initialization into a sparse csgraph to allow a depth first search
 to be run on the sparse csgraph
 '''
-class MatlabConnectome:
+class Connectome:
 
   '''
   Constructor taking file name and variable inside file to be processed
@@ -97,4 +97,4 @@ class MatlabConnectome:
     self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
   # End final_max_inode();
 
-# End MatlabConnectome Class;
+# End Connectome Class;
