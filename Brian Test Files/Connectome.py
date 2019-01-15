@@ -1,100 +1,60 @@
-# TODO
-#     - Combine max_layer_node() and final_max_inode() to be more efficient
-#     - Check comments and change as necessary
-#     - Implement way to apply hash look up with data from depth_first_order
-#     - Rename classes to better reflect what they do
+import sys
+from AdjacencyMatrix import AdjacencyMatrix
+from MatlabNodeParser import MatlabNodeParser
 
-import numpy as np
 from scipy.sparse import csgraph
-from scipy.sparse.csgraph import *
+from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense, depth_first_tree
 
-'''
-The Connectome class is designed to turn a node container supplied 
-on initialization into a sparse csgraph to allow a depth first search
-to be run on the sparse csgraph
-'''
-class Connectome:
+# Picks file to run
+var = input("Which test file? " + 
+    "1) SetOne "+ 
+    "2) SetTwo "+ 
+    "3) SetThree "+ 
+    "4) Test "+ 
+    "5) T ")
+if var == 1:
+  file_name = "SetOne.mat"
+  var_name = "SetOne"
+elif var == 2:
+  file_name = "SetTwo.mat"
+  var_name = "SetTwo"
+elif var == 3:
+  file_name = "SetThree.mat"
+  var_name = "SetThree"
+elif var == 4:
+  file_name = "Test.mat"
+  var_name = "Test"
+elif var == 5:
+  file_name = "T.mat"
+  var_name = "T"
+else:
+  print("Bad input = SetOne")
+  file_name = "SetOne.mat"
+  var_name = "SetOne"
 
-  '''
-  Constructor taking file name and variable inside file to be processed
-  '''
-  def __init__(self, node_list):
-    self._hash_lookup = {}
-    self._matrix = None
-    self._max_layer_node = {} 
-    self._nodes = node_list
-  # End __init__();
+# File loaded in
+parsed_data = MatlabNodeParser(file_name, var_name)
+parsed_data.load_data()
+parsed_data.construct_node_container()
 
+# Initialize AdjacencyMatrix
+connect = AdjacencyMatrix(parsed_data._node_container)
+connect.fill_matrix();
 
-  '''
-  Constructs an adjacency matrix
-  '''
-  def construct_empty_matrix(self):
-    self.max_layer_node()
-    total_layer_nodes = 0
-    for key in self._max_layer_node:
-      total_layer_nodes += self._max_layer_node[key]
-    self._matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
-  # End construct_empty_matrix();
+# csgraph depth_first_search run on matrix from AdjacencyMatrix
+s_graph = csgraph_from_dense(connect._matrix)
+print("***Print of compressed graph connectivity***")
+print(s_graph)
 
-  '''
-  Fills matrix with node connectivity
-  '''
-  def fill_matrix(self):
-    self.construct_empty_matrix()
+# Printing each node's connectivity
+print("")
+print("***Printing each node and its connectivity***")
+for node in connect._nodes:
+    print(str(node), connect._hash_lookup[node])
+    print(depth_first_order(s_graph, connect._hash_lookup[node], True, True))
+    print('\n')
 
-    # Old_offest represents current layer being processed
-    old_offset = 0
-    # Offset represents the i_node layer below current layer
-    offset = self._max_layer_node[1]
-
-    layer = 1
-    for n in self._nodes:
-      # Checks for layer change, changes offsets if there is layer change
-      if n._layer != layer:
-        old_offset = offset
-        offset += self._max_layer_node[layer + 1]
-        layer = n._layer
-      
-      # Gives nodes a hash_lookup value
-      if layer != 1:
-        self._hash_lookup[n] = n._node_number + old_offset
-      else:
-        self._hash_lookup[n] = n._node_number
-
-      # Inputs node with hash_lookup value to matrix
-      for j in n._input_nodes:
-        self._matrix[self._hash_lookup[n]][j + offset] = 1
-  # End fill_matrix();
-
-  '''
-  Init. _max_layer_node dictionary with layers and their highest node number for offset calculation
-  '''
-  def max_layer_node(self):
-    for i in self._nodes:
-      if i._layer in self._max_layer_node:
-        if i._node_number > self._max_layer_node[i._layer]:
-          self._max_layer_node[i._layer] = i._node_number
-      else:
-        self._max_layer_node[i._layer] = i._node_number
-    self.final_max_inode()
-  # End max_layer_node();
-
-  '''
-  Sets highest final layer (input layer) max i_node value for offset calculation
-  '''
-  def final_max_inode(self):
-    holder = {}
-    for i in self._nodes:
-      if i._layer < max(self._max_layer_node.keys()):
-        continue
-      if i._layer in holder:
-        if max(i._input_nodes) > holder[i._layer]:
-          holder[i._layer] = max(i._input_nodes)
-        continue
-      if len(i._input_nodes) > 0:
-        holder[i._layer] = max(i._input_nodes)
-    self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
-  # End final_max_inode();
-
-# End Connectome Class;
+# Prints size of matrix
+print("***Printing size of each matrix***")
+print("Size of matrix uncompressed: ", sys.getsizeof(connect._matrix))
+print("Size of matrix compressed: ", sys.getsizeof(s_graph))
