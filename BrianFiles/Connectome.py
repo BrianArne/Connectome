@@ -1,33 +1,34 @@
 import sys
-from AdjacencyMatrix import AdjacencyMatrix
-from MatlabNodeParser import MatlabNodeParser
+from Containers.AdjacencyMatrix import AdjacencyMatrix
+from Parsers.MatlabNodeParser import MatlabNodeParser
 
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense, depth_first_tree
 
-# Picks file to run
+WORKING_DIR = sys.path[0]
+TESTING_DIR = "/TestFiles/MatlabFiles/"
 
-print(sys.path)
+# Picks file to run
 var = input("Which test file? " + 
-    "1) SetOne "+ 
-    "2) SetTwo "+ 
-    "3) SetThree "+ 
-    "4) Test "+ 
-    "5) T ")
+            "1) SetOne "+ 
+            "2) SetTwo "+ 
+            "3) SetThree "+ 
+            "4) Test "+ 
+            "5) T ")
 if var == 1:
-  file_name = "SetOne.mat"
+  file_name = WORKING_DIR + TESTING_DIR + "SetOne.mat"
   var_name = "SetOne"
 elif var == 2:
-  file_name = "SetTwo.mat"
+  file_name = WORKING_DIR + TESTING_DIR + "SetTwo.mat"
   var_name = "SetTwo"
 elif var == 3:
-  file_name = "SetThree.mat"
+  file_name = WORKING_DIR + TESTING_DIR + "SetThree.mat"
   var_name = "SetThree"
 elif var == 4:
-  file_name = "Test.mat"
+  file_name = WORKING_DIR + TESTING_DIR + "Test.mat"
   var_name = "Test"
 elif var == 5:
-  file_name = "T.mat"
+  file_name = WORKING_DIR + TESTING_DIR + "T.mat"
   var_name = "T"
 else:
   print("Bad input = SetOne")

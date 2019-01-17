@@ -1,6 +1,6 @@
 from scipy import io
-from Node import *
-from NodeParser import NodeParser
+from Containers.Node import *
+from Parsers.NodeParser import NodeParser
 
 '''
 The MatlabNodeParser class is responsible for constructing a node container from .mat files

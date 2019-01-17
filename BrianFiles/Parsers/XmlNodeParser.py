@@ -1,5 +1,5 @@
-from Node import *
-from NodeParser import NodeParser
+from Containers.Node import *
+from Parsers.NodeParser import NodeParser
 
 '''
 The XmlNodeParser class is responsible for constructing a conde conatiner from a .xml file
