@@ -1,5 +1,5 @@
 import unittest
-from Node import *
+from Containers.Node import *
 
 class TestNode(unittest.TestCase):
 
