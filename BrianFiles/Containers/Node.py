@@ -5,6 +5,7 @@ class Node:
 
   '''
   Constructor for node
+  @Throws ValueError for any number less than 1
   '''
   def __init__(self, layer, node_number, input_nodes):
     if (not Node.validate(layer, node_number, input_nodes)):
