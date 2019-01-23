@@ -1,10 +1,3 @@
-# TODO
-#     - Combine max_layer_node() and final_max_inode() to be more efficient
-#     - Check comments and change as necessary
-#     - Implement way to apply hash look up with data from depth_first_order
-#     - Rename classes to better reflect what they do
-#     - Revisit final_max_node() may be able to be removed after changing construct_node_container() in parser
-
 import numpy as np
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import *
@@ -83,6 +76,7 @@ class AdjacencyMatrix:
 
   '''
   Sets highest final layer (input layer) max i_node value for offset calculation
+  # Might be able to completely remove this
   '''
   def final_max_inode(self):
     holder = {}

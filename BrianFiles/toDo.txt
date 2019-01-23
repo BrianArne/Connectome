@@ -1,0 +1,16 @@
+ToDo:
+
+MatlabNodeParser:
+  -construct_node_container() was changed to created nodes for the original input nodes. Can this method be
+   broken down into more manageable methods. Can it be made simpler?
+
+AdjacencyMatrix:
+  -final_max_inode saw some alterations with the change of construct_node_container in MatlabNodeParser.
+   Do we still need final_max_inode its current state? Can it be simplified?
+  -Can max_layer_node() and final_max_inode() be changed for efficiency? are they even still needed
+  -Might be able to completely remove final_max_inode() as all nodes are now in _nodes
+
+GUI thoughts:
+  -All valid nodes show up around the circle but there is no connectivity shown.
+  -You can click on any node and it will show the original inputs that it is connected to
+  -The outputs and inputs should be represented in some unique way

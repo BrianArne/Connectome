@@ -27,6 +27,9 @@ class MatlabNodeParser(NodeParser):
       last_layer = node._layer if node._layer > last_layer else last_layer
       self._node_container.append(node)
 
+    # Handles original input nodes that are not accurately represented in the .mat file
+    # ie. represented as input nodes for another node in a different layer but
+    # are not represented in a layer by themselves like other nodes are
     i_nodes_present = []
     for n in self._node_container:
         if n._layer is last_layer:
