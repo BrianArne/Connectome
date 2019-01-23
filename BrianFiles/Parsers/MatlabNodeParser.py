@@ -21,10 +21,26 @@ class MatlabNodeParser(NodeParser):
   Returns a container with all nodes and their data
   '''
   def construct_node_container(self):
+    last_layer = 1
     for i in range(self._total_nodes):
       node = Node(self.get_data_layer(i), self.get_data_current_node(i), self.get_data_input_nodes(i))
+      last_layer = node._layer if node._layer > last_layer else last_layer
       self._node_container.append(node)
-    return self._node_container
+
+    i_nodes_present = []
+    for n in self._node_container:
+        if n._layer is last_layer:
+            if n._input_nodes is type(int):
+                node = Node(last_layer + 1, n._input_nodes, [])
+                if n._input_nodes not in i_nodes_present:
+                    i_nodes_present.append(n._input_nodes)
+                    self._node_container.append(node)
+            else:
+                for i_node in n._input_nodes:
+                    node = Node(last_layer + 1, i_node, [])
+                    if i_node not in i_nodes_present:
+                        i_nodes_present.append(i_node)
+                        self._node_container.append(node)
   # End construct_node_container();
 
   '''

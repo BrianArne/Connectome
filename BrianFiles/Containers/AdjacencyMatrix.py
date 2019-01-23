@@ -3,6 +3,7 @@
 #     - Check comments and change as necessary
 #     - Implement way to apply hash look up with data from depth_first_order
 #     - Rename classes to better reflect what they do
+#     - Revisit final_max_node() may be able to be removed after changing construct_node_container() in parser
 
 import numpy as np
 from scipy.sparse import csgraph
@@ -94,7 +95,8 @@ class AdjacencyMatrix:
         continue
       if len(i._input_nodes) > 0:
         holder[i._layer] = max(i._input_nodes)
-    self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
+        if holder is not {}:
+            self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
   # End final_max_inode();
 
 # End AdjacencyMatrix Class;

@@ -52,9 +52,10 @@ print(s_graph)
 print("")
 print("***Printing each node and its connectivity***")
 for node in connect._nodes:
-    print(str(node), connect._hash_lookup[node])
-    print(depth_first_order(s_graph, connect._hash_lookup[node], True, True)[1])
-    print('\n')
+    if node._layer is 1:
+        print(str(node), connect._hash_lookup[node])
+        print(depth_first_order(s_graph, connect._hash_lookup[node], True, True)[1])
+        print('\n')
 
 # Prints size of matrix
 print("***Printing size of each matrix***")
