@@ -81,9 +81,13 @@ class MatlabNodeParser(NodeParser):
 
   '''
   Reads in file data to _data
+  @Throws IOError on bad file
   '''
   def load_data(self):
-    self._data = io.loadmat(self._file_name, squeeze_me = True)
+    try:
+        self._data = io.loadmat(self._file_name, squeeze_me = True)
+    except IOError:
+        Print("Error loading " + self._file_name)
     self._total_nodes = len(self._data[self._var_name])
   # End load_data();
 
