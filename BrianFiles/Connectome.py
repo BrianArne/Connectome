@@ -60,11 +60,3 @@ for node in connect._nodes:
         print(str(node), connect._hash_lookup[node])
         print(depth_first_order(s_graph, connect._hash_lookup[node], True, True)[1])
         print('\n')
-
-# Prints size of matrix
-print("***Printing size of each matrix***")
-print("Size of matrix uncompressed: ", sys.getsizeof(connect._matrix))
-print("Size of matrix compressed: ", sys.getsizeof(s_graph))
-
-for n in parsed_data._node_container:
-    print(n)
