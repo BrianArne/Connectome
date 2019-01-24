@@ -35,12 +35,12 @@ class MatlabNodeParser(NodeParser):
     i_nodes = []
     for i in range(self._total_nodes):
       node = Node(self.get_data_layer(i), self.get_data_current_node(i), self.get_data_input_nodes(i))
+      self._node_container.append(node)
       if node._layer is not last_layer:
         last_layer = node._layer
         i_nodes[:] = []
       for n in node._input_nodes:
         i_nodes.append(n)
-        self._node_container.append(node)
 
     i_nodes.sort()
     self.construct_i_nodes(last_layer, i_nodes)

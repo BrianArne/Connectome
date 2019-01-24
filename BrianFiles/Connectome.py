@@ -36,7 +36,11 @@ else:
 
 # File loaded in
 parsed_data = MatlabNodeParser(file_name, var_name)
-parsed_data.load_data()
+try:
+  parsed_data.load_data()
+except IOError:
+    print("Terminating...")
+    sys.exit()
 parsed_data.construct_node_container()
 
 # Initialize AdjacencyMatrix
@@ -61,3 +65,6 @@ for node in connect._nodes:
 print("***Printing size of each matrix***")
 print("Size of matrix uncompressed: ", sys.getsizeof(connect._matrix))
 print("Size of matrix compressed: ", sys.getsizeof(s_graph))
+
+for n in parsed_data._node_container:
+    print(n)

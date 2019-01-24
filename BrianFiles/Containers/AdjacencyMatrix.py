@@ -71,26 +71,6 @@ class AdjacencyMatrix:
           self._max_layer_node[i._layer] = i._node_number
       else:
         self._max_layer_node[i._layer] = i._node_number
-    self.final_max_inode()
   # End max_layer_node();
-
-  '''
-  Sets highest final layer (input layer) max i_node value for offset calculation
-  # Might be able to completely remove this
-  '''
-  def final_max_inode(self):
-    holder = {}
-    for i in self._nodes:
-      if i._layer < max(self._max_layer_node.keys()):
-        continue
-      if i._layer in holder:
-        if max(i._input_nodes) > holder[i._layer]:
-          holder[i._layer] = max(i._input_nodes)
-        continue
-      if len(i._input_nodes) > 0:
-        holder[i._layer] = max(i._input_nodes)
-        if holder is not {}:
-            self._max_layer_node[max(holder.keys()) + 1] = holder[max(holder.keys())]
-  # End final_max_inode();
 
 # End AdjacencyMatrix Class;
