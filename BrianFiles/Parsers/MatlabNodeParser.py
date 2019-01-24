@@ -18,6 +18,16 @@ class MatlabNodeParser(NodeParser):
   # End __init__();
 
   '''
+  Appends final i_nodes that do not have a cell associated with the .mat file
+  '''
+  def construct_i_nodes(self, last_previous_layer, i_nodes):
+    input_layer = last_previous_layer + 1
+    for n in i_nodes:
+        node = Node(input_layer, n, [])
+        self._node_container.append(node)
+  # End construct_i_nodes();
+
+  '''
   Initializes self. _total_nodes container with all nodes and their data
   '''
   def construct_node_container(self):
@@ -36,16 +46,6 @@ class MatlabNodeParser(NodeParser):
     self.construct_i_nodes(last_layer, i_nodes)
   # End construct_node_container();
   
-  '''
-  Appends final i_nodes that do not have a cell associated with the .mat file
-  '''
-  def construct_i_nodes(self, last_previous_layer, i_nodes):
-    input_layer = last_previous_layer + 1
-    for n in i_nodes:
-        node = Node(input_layer, n, [])
-        self._node_container.append(node)
-  # End construct_i_nodes();
-
   '''
   Reurns layer of node input parameter
   '''
