@@ -13,21 +13,28 @@ class AdjacencyMatrix:
   Constructor taking file name and variable inside file to be processed
   '''
   def __init__(self, node_list):
-    self._hash_lookup = {}
+    self._hash = {}
+    self._layer_hash = {}
+    self._position_hash = {}
     self._matrix = None
-    self._max_layer_node = {} 
+    self._max_layer = None
     self._nodes = node_list
   # End __init__();
 
+  '''
+  Checks if the input_node terminates before original inputs
+  '''
+  def check_termination(self, node_number, layer):
+      layer_hash = self._hash[layer]
+      return node_number in layer_hash.keys()
+  # End check_termination
 
   '''
   Constructs an adjacency matrix
   '''
   def construct_empty_matrix(self):
-    self.max_layer_node()
-    total_layer_nodes = 0
-    for key in self._max_layer_node:
-      total_layer_nodes += self._max_layer_node[key]
+    self.init_position_hash()
+    total_layer_nodes = len(self._nodes)
     self._matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
   # End construct_empty_matrix();
 
@@ -36,41 +43,55 @@ class AdjacencyMatrix:
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
-
-    # Old_offest represents current layer being processed
-    old_offset = 0
-    # Offset represents the i_node layer below current layer
-    offset = self._max_layer_node[1]
-
-    layer = 1
     for n in self._nodes:
-      # Checks for layer change, changes offsets if there is layer change
-      if n._layer != layer:
-        old_offset = offset
-        offset += self._max_layer_node[layer + 1]
-        layer = n._layer
-      
-      # Gives nodes a hash_lookup value
-      if layer != 1:
-        self._hash_lookup[n] = n._node_number + old_offset
-      else:
-        self._hash_lookup[n] = n._node_number
+        for j in n._input_nodes:
+            if (n._layer + 1) <= self._max_layer and self.check_termination(j, n._layer+1):
+                l_hash = self._hash[n._layer+1]
+                pos = l_hash[j]
+                self._matrix[self._position_hash[n]][pos] = 1
 
-      # Inputs node with hash_lookup value to matrix
-      for j in n._input_nodes:
-        self._matrix[self._hash_lookup[n]][j + offset] = 1
+
   # End fill_matrix();
 
   '''
-  Init. _max_layer_node dictionary with layers and their highest node number for offset calculation
+  Sets the _max_layer to the highest layer from the nodes
   '''
-  def max_layer_node(self):
-    for i in self._nodes:
-      if i._layer in self._max_layer_node:
-        if i._node_number > self._max_layer_node[i._layer]:
-          self._max_layer_node[i._layer] = i._node_number
-      else:
-        self._max_layer_node[i._layer] = i._node_number
+  def max_layer(self):
+      m_layer = 0
+      for n in self._nodes:
+          if n._layer > m_layer:
+            m_layer = n._layer
+      self._max_layer = m_layer
   # End max_layer_node();
+  
+  '''
+  Initializes hash with layer for the key and the layer hash for the value
+  '''
+  def init_hash(self):
+      for i in range(1, self._max_layer + 1):
+          self._hash[i] = {}
+          self.init_layer_hash(self._hash[i], i)
+  # End init_hash();
+  
+  '''
+  Initializes hash with node numbers for keys and position in matrix for value
+  '''
+  def init_layer_hash(self, origin_hash, layer):
+      for n in self._nodes:
+          if n._layer is layer:
+              origin_hash[n._node_number] = self._position_hash[n]
+  # End init_layer_hash();
+
+  '''
+  Initializes hash with position in matrix for key and the node for the value
+  '''
+  def init_position_hash(self):
+      self.max_layer()
+      position = 0
+      for n in self._nodes:
+          self._position_hash[n] = position
+          position += 1
+      self.init_hash()
+  # End init_position_hash();
 
 # End AdjacencyMatrix Class;
