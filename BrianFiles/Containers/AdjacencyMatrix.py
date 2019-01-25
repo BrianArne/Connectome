@@ -13,7 +13,6 @@ class AdjacencyMatrix:
   Constructor taking file name and variable inside file to be processed
   '''
   def __init__(self, node_list):
-    self._hash = {}
     self._layer_hash = {}
     self._position_hash = {}
     self._matrix = None
@@ -22,31 +21,31 @@ class AdjacencyMatrix:
   # End __init__();
 
   '''
-  Checks if the input_node terminates before original inputs
+  Checks if the input_node terminates before reaching original inputs
   '''
   def check_termination(self, node_number, layer):
-      layer_hash = self._hash[layer]
+      layer_hash = self._layer_hash[layer]
       return node_number in layer_hash.keys()
   # End check_termination
 
   '''
-  Constructs an adjacency matrix
+  Constructs an empty adjacency matrix and initilizes all hashes for lookup
   '''
   def construct_empty_matrix(self):
     self.init_position_hash()
     total_layer_nodes = len(self._nodes)
-    self._matrix = [[0] * (total_layer_nodes+1) for n in range (total_layer_nodes+1)]
+    self._matrix = [[0] * (total_layer_nodes) for n in range (total_layer_nodes)]
   # End construct_empty_matrix();
 
   '''
-  Fills matrix with node connectivity
+  Fills matrix to make adjacency matrix
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
     for n in self._nodes:
         for j in n._input_nodes:
             if (n._layer + 1) <= self._max_layer and self.check_termination(j, n._layer+1):
-                l_hash = self._hash[n._layer+1]
+                l_hash = self._layer_hash[n._layer+1]
                 pos = l_hash[j]
                 self._matrix[self._position_hash[n]][pos] = 1
 
@@ -65,16 +64,16 @@ class AdjacencyMatrix:
   # End max_layer_node();
   
   '''
-  Initializes hash with layer for the key and the layer hash for the value
+  Initializes hash with @key = layer, @value = layer_hash
   '''
   def init_hash(self):
       for i in range(1, self._max_layer + 1):
-          self._hash[i] = {}
-          self.init_layer_hash(self._hash[i], i)
+          self._layer_hash[i] = {}
+          self.init_layer_hash(self._layer_hash[i], i)
   # End init_hash();
   
   '''
-  Initializes hash with node numbers for keys and position in matrix for value
+  Initializes hash with @key = node_number, @value = position in matrix
   '''
   def init_layer_hash(self, origin_hash, layer):
       for n in self._nodes:
@@ -83,7 +82,7 @@ class AdjacencyMatrix:
   # End init_layer_hash();
 
   '''
-  Initializes hash with position in matrix for key and the node for the value
+  Initializes hash with @key = node, @value = position in the matrix
   '''
   def init_position_hash(self):
       self.max_layer()
