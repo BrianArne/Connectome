@@ -50,7 +50,7 @@ class MatlabNodeParser(NodeParser):
   '''
   Reurns layer of node input parameter
   '''
-  def get_data_layer(self,node):
+  def get_data_layer(self, node):
     node_data = self._data[self._var_name][node]
     arr = node_data.tolist()
     return arr[0]
