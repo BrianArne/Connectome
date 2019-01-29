@@ -92,34 +92,130 @@ class TestMatlabNodeParser(unittest.TestCase):
     self.assertEqual(3 , self._containers[2]._total_nodes)
     self.assertEqual(20 , self._containers[3]._total_nodes)
     self.assertEqual(88 , self._containers[4]._total_nodes)
-
-
-
-
+    
+    # Checks _data
+    self.assertIsNotNone(self._containers[0]._data)
+    self.assertEqual(type(self._containers[0]._data), dict)
+    self.assertIsNotNone(self._containers[1]._data)
+    self.assertEqual(type(self._containers[1]._data), dict)
+    self.assertIsNotNone(self._containers[2]._data)
+    self.assertEqual(type(self._containers[2]._data), dict)
+    self.assertIsNotNone(self._containers[3]._data)
+    self.assertEqual(type(self._containers[3]._data), dict)
+    self.assertIsNotNone(self._containers[4]._data)
+    self.assertEqual(type(self._containers[4]._data), dict)
   # End construct_node_container();
 
   def test_get_data_layer(self):
-    pass
+    for c in self._containers:
+      c.load_data()
+    
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    self.assertEqual(int , type(self._containers[0].get_data_layer(5)))
+    self.assertRaises(IndexError, self._containers[0].get_data_layer(6))
+        
+    self.assertEqual(1 , self._containers[1].get_data_layer(0))
+    self.assertEqual(1 , self._containers[1].get_data_layer(1))
+    self.assertEqual(3 , self._containers[1].get_data_layer(4))
+    self.assertEqual(int , type(self._containers[1].get_data_layer(4)))
+    self.assertRaises(IndexError, self._containers[1].get_data_layer(5))
 
+    self.assertEqual(1 , self._containers[2].get_data_layer(0))
+    self.assertEqual(2 , self._containers[2].get_data_layer(1))
+    self.assertEqual(2 , self._containers[2].get_data_layer(2))
+    self.assertEqual(int , type(self._containers[1].get_data_layer(0)))
+    self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
+
+    # Need matlab to implement
+    '''
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    '''
   # End test_get_data_layer();
 
   def test_get_data_current_node(self):
-    pass
+    for c in self._containers:
+      c.load_data()
 
+    self.assertEqual(1 , self._containers[0].get_data_current_node(0))
+    self.assertEqual(30 , self._containers[0].get_data_current_node(3))
+    self.assertEqual(40 , self._containers[0].get_data_current_node(5))
+    self.assertEqual(int , type(self._containers[0].get_data_current_node(5)))
+    self.assertRaises(IndexError, self._containers[0].get_data_layer(6))
+        
+    self.assertEqual(1 , self._containers[1].get_data_current_node(0))
+    self.assertEqual(4 , self._containers[1].get_data_current_node(2))
+    self.assertEqual(15 , self._containers[1].get_data_current_node(4))
+    self.assertEqual(int , type(self._containers[1].get_data_current_node(0)))
+    self.assertRaises(IndexError, self._containers[1].get_data_layer(5))
+
+    self.assertEqual(1 , self._containers[2].get_data_current_node(0))
+    self.assertEqual(1 , self._containers[2].get_data_current_node(1))
+    self.assertEqual(5 , self._containers[2].get_data_current_node(2))
+    self.assertEqual(int , type(self._containers[2].get_data_current_node(1)))
+    self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
+
+    # Need matlab to implement
+    '''
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    '''
   # End test_get_data_current_node();
 
   def test_get_data_input_nodes(self):
-    pass
+    for c in self._containers:
+      c.load_data()
 
+    self.assertEqual([1, 7] , self._containers[0].get_data_input_nodes(0))
+    self.assertEqual([42] , self._containers[0].get_data_input_nodes(3))
+    self.assertEqual([100] , self._containers[0].get_data_input_nodes(5))
+    self.assertEqual(list , type(self._containers[0].get_data_input_nodes(0)))
+    self.assertEqual(list , type(self._containers[0].get_data_input_nodes(5)))
+    self.assertRaises(IndexError, self._containers[0].get_data_layer(6))
+    
+    self.assertEqual([4] , self._containers[1].get_data_input_nodes(0))
+    self.assertEqual([15] , self._containers[1].get_data_input_nodes(3))
+    self.assertEqual([1, 2] , self._containers[1].get_data_input_nodes(4))
+    self.assertEqual(list , type(self._containers[1].get_data_input_nodes(0)))
+    self.assertEqual(list , type(self._containers[1].get_data_input_nodes(4)))
+    self.assertRaises(IndexError, self._containers[1].get_data_layer(5))
+
+    self.assertEqual([1, 5] , self._containers[2].get_data_input_nodes(0))
+    self.assertEqual([9] , self._containers[2].get_data_input_nodes(1))
+    self.assertEqual([2] , self._containers[2].get_data_input_nodes(2))
+    self.assertEqual(list , type(self._containers[2].get_data_input_nodes(0)))
+    self.assertEqual(list , type(self._containers[2].get_data_input_nodes(2)))
+    self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
+
+    # Need matlab to implement
+    '''
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+
+    self.assertEqual(1 , self._containers[0].get_data_layer(0))
+    self.assertEqual(2 , self._containers[0].get_data_layer(2))
+    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    '''
   # End test_get_data_input_nodes();
 
   def test_load_data(self):
-    pass
-
-
+    bad_file = "bad"
+    bad_var = ""
+    bad_load = MatlabNodeParser(bad_file, bad_var)
+    self.assertRaises(IOError, bad_load.load_data())
   # End test_load_data();
-
-
-
 
 # End TestMatlabNodeParser();

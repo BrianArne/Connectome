@@ -49,35 +49,50 @@ class MatlabNodeParser(NodeParser):
   
   '''
   Reurns layer of node input parameter
+  @Throws IndexError
   '''
   def get_data_layer(self, node):
-    node_data = self._data[self._var_name][node]
-    arr = node_data.tolist()
-    return arr[0]
+    try: 
+        node_data = self._data[self._var_name][node]
+    except IndexError:
+        pass
+    else:
+        arr = node_data.tolist()
+        return arr[0]
   # End get_data_layer();
 
   '''
   Returns the number/id of node input parameter
+  @Throws IndexError
   '''
   def get_data_current_node(self, node):
-    node_data = self._data[self._var_name][node]
-    arr = node_data.tolist()
-    return arr[1]
+    try:
+        node_data = self._data[self._var_name][node]
+    except IndexError:
+        pass
+    else:
+        arr = node_data.tolist()
+        return arr[1]
   # End get_data_current_node();
 
   '''
   Returns list of input nodes for node input parameter
+  @Throws IndexError
   '''
   def get_data_input_nodes(self, node):
-    node_data = self._data[self._var_name][node]
-    a = node_data.tolist()
-    arr = []
-    if type(a[2]) == int:
-      arr.append(a[2])
+    try:
+        node_data = self._data[self._var_name][node]
+    except IndexError:
+        pass
     else:
-      for val in a[2]:
-        arr.append(val)
-    return arr
+        a = node_data.tolist()
+        arr = []
+        if type(a[2]) == int:
+          arr.append(a[2])
+        else:
+          for val in a[2]:
+            arr.append(val)
+        return arr
   # End get_data_input_nodes();
 
   '''
@@ -88,8 +103,9 @@ class MatlabNodeParser(NodeParser):
     try:
         self._data = io.loadmat(self._file_name, squeeze_me = True)
     except IOError:
-        Print("Error loading " + self._file_name)
-    self._total_nodes = len(self._data[self._var_name])
+        print("Error loading file: " + self._file_name)
+    else:
+        self._total_nodes = len(self._data[self._var_name])
   # End load_data();
 
 # End NodeParser Class;
