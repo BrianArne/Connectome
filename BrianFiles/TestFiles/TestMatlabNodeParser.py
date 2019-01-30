@@ -81,29 +81,12 @@ class TestMatlabNodeParser(unittest.TestCase):
       c.load_data()
       c.construct_node_container()
 
-    # Checks constructed node length 
     self.assertEqual(9, len(self._containers[0]._node_container))
     self.assertEqual(7, len(self._containers[1]._node_container))
     self.assertEqual(5, len(self._containers[2]._node_container))
+    self.assertEqual(25, len(self._containers[3]._node_container))
+    self.assertEqual(198, len(self._containers[4]._node_container))
 
-    # Checks _total_nodes
-    self.assertEqual(6 , self._containers[0]._total_nodes)
-    self.assertEqual(5 , self._containers[1]._total_nodes)
-    self.assertEqual(3 , self._containers[2]._total_nodes)
-    self.assertEqual(20 , self._containers[3]._total_nodes)
-    self.assertEqual(88 , self._containers[4]._total_nodes)
-    
-    # Checks _data
-    self.assertIsNotNone(self._containers[0]._data)
-    self.assertEqual(type(self._containers[0]._data), dict)
-    self.assertIsNotNone(self._containers[1]._data)
-    self.assertEqual(type(self._containers[1]._data), dict)
-    self.assertIsNotNone(self._containers[2]._data)
-    self.assertEqual(type(self._containers[2]._data), dict)
-    self.assertIsNotNone(self._containers[3]._data)
-    self.assertEqual(type(self._containers[3]._data), dict)
-    self.assertIsNotNone(self._containers[4]._data)
-    self.assertEqual(type(self._containers[4]._data), dict)
   # End construct_node_container();
 
   def test_get_data_layer(self):
@@ -128,16 +111,15 @@ class TestMatlabNodeParser(unittest.TestCase):
     self.assertEqual(int , type(self._containers[1].get_data_layer(0)))
     self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
 
-    # Need matlab to implement
-    '''
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    self.assertEqual(1 , self._containers[3].get_data_layer(0))
+    self.assertEqual(3 , self._containers[3].get_data_layer(11))
+    self.assertEqual(4 , self._containers[3].get_data_layer(19))
+    self.assertRaises(IndexError, self._containers[3].get_data_layer(20))
 
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
-    '''
+    self.assertEqual(4 , self._containers[4].get_data_layer(27))
+    self.assertEqual(5 , self._containers[4].get_data_layer(87))
+    self.assertEqual(1 , self._containers[4].get_data_layer(0))
+    self.assertRaises(IndexError, self._containers[4].get_data_layer(88))
   # End test_get_data_layer();
 
   def test_get_data_current_node(self):
@@ -148,30 +130,31 @@ class TestMatlabNodeParser(unittest.TestCase):
     self.assertEqual(30 , self._containers[0].get_data_current_node(3))
     self.assertEqual(40 , self._containers[0].get_data_current_node(5))
     self.assertEqual(int , type(self._containers[0].get_data_current_node(5)))
-    self.assertRaises(IndexError, self._containers[0].get_data_layer(6))
+    self.assertRaises(IndexError, self._containers[0].get_data_current_node(6))
         
     self.assertEqual(1 , self._containers[1].get_data_current_node(0))
     self.assertEqual(4 , self._containers[1].get_data_current_node(2))
     self.assertEqual(15 , self._containers[1].get_data_current_node(4))
     self.assertEqual(int , type(self._containers[1].get_data_current_node(0)))
-    self.assertRaises(IndexError, self._containers[1].get_data_layer(5))
+    self.assertRaises(IndexError, self._containers[1].get_data_current_node(5))
 
     self.assertEqual(1 , self._containers[2].get_data_current_node(0))
     self.assertEqual(1 , self._containers[2].get_data_current_node(1))
     self.assertEqual(5 , self._containers[2].get_data_current_node(2))
     self.assertEqual(int , type(self._containers[2].get_data_current_node(1)))
-    self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
+    self.assertRaises(IndexError, self._containers[2].get_data_current_node(3))
 
-    # Need matlab to implement
-    '''
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    self.assertEqual(1 , self._containers[3].get_data_current_node(0))
+    self.assertEqual(14 , self._containers[3].get_data_current_node(13))
+    self.assertEqual(20 , self._containers[3].get_data_current_node(19))
+    self.assertEqual(int , type(self._containers[3].get_data_current_node(1)))
+    self.assertRaises(IndexError, self._containers[3].get_data_current_node(20))
 
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
-    '''
+    self.assertEqual(1 , self._containers[4].get_data_current_node(0))
+    self.assertEqual(4 , self._containers[4].get_data_current_node(11))
+    self.assertEqual(100 , self._containers[4].get_data_current_node(87))
+    self.assertEqual(int , type(self._containers[4].get_data_current_node(1)))
+    self.assertRaises(IndexError, self._containers[4].get_data_current_node(88))
   # End test_get_data_current_node();
 
   def test_get_data_input_nodes(self):
@@ -199,16 +182,19 @@ class TestMatlabNodeParser(unittest.TestCase):
     self.assertEqual(list , type(self._containers[2].get_data_input_nodes(2)))
     self.assertRaises(IndexError, self._containers[2].get_data_layer(3))
 
-    # Need matlab to implement
-    '''
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
+    self.assertEqual([6,7,8,9,10] , self._containers[3].get_data_input_nodes(0))
+    self.assertEqual([16,17,18,19,20], self._containers[3].get_data_input_nodes(11))
+    self.assertEqual([21,22,23,24,25] , self._containers[3].get_data_input_nodes(19))
+    self.assertEqual(list , type(self._containers[3].get_data_input_nodes(0)))
+    self.assertEqual(list , type(self._containers[3].get_data_input_nodes(19)))
+    self.assertRaises(IndexError, self._containers[3].get_data_layer(20))
 
-    self.assertEqual(1 , self._containers[0].get_data_layer(0))
-    self.assertEqual(2 , self._containers[0].get_data_layer(2))
-    self.assertEqual(3 , self._containers[0].get_data_layer(5))
-    '''
+    self.assertEqual([1,2,3,4,5,6] , self._containers[4].get_data_input_nodes(0))
+    self.assertEqual([22,46,59,82] , self._containers[4].get_data_input_nodes(58))
+    self.assertEqual([9,48,110,118] , self._containers[4].get_data_input_nodes(87))
+    self.assertEqual(list , type(self._containers[4].get_data_input_nodes(0)))
+    self.assertEqual(list , type(self._containers[4].get_data_input_nodes(2)))
+    self.assertRaises(IndexError, self._containers[4].get_data_layer(88))
   # End test_get_data_input_nodes();
 
   def test_load_data(self):
@@ -216,6 +202,28 @@ class TestMatlabNodeParser(unittest.TestCase):
     bad_var = ""
     bad_load = MatlabNodeParser(bad_file, bad_var)
     self.assertRaises(IOError, bad_load.load_data())
+
+    for c in self._containers:
+      c.load_data()
+
+    # Checks _total_nodes
+    self.assertEqual(6 , self._containers[0]._total_nodes)
+    self.assertEqual(5 , self._containers[1]._total_nodes)
+    self.assertEqual(3 , self._containers[2]._total_nodes)
+    self.assertEqual(20 , self._containers[3]._total_nodes)
+    self.assertEqual(88 , self._containers[4]._total_nodes)
+    
+    # Checks _data
+    self.assertIsNotNone(self._containers[0]._data)
+    self.assertEqual(type(self._containers[0]._data), dict)
+    self.assertIsNotNone(self._containers[1]._data)
+    self.assertEqual(type(self._containers[1]._data), dict)
+    self.assertIsNotNone(self._containers[2]._data)
+    self.assertEqual(type(self._containers[2]._data), dict)
+    self.assertIsNotNone(self._containers[3]._data)
+    self.assertEqual(type(self._containers[3]._data), dict)
+    self.assertIsNotNone(self._containers[4]._data)
+    self.assertEqual(type(self._containers[4]._data), dict)
   # End test_load_data();
 
 # End TestMatlabNodeParser();
