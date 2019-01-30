@@ -53,17 +53,6 @@ class AdjacencyMatrix:
   # End fill_matrix();
 
   '''
-  Sets the _max_layer to the highest layer from the nodes
-  '''
-  def max_layer(self):
-      m_layer = 0
-      for n in self._nodes:
-          if n._layer > m_layer:
-            m_layer = n._layer
-      self._max_layer = m_layer
-  # End max_layer_node();
-  
-  '''
   Initializes hash with @key = layer, @value = layer_hash
   '''
   def init_hash(self):
@@ -93,4 +82,15 @@ class AdjacencyMatrix:
       self.init_hash()
   # End init_position_hash();
 
+  '''
+  Sets the _max_layer to the highest layer from the nodes
+  '''
+  def max_layer(self):
+      m_layer = 0
+      for n in self._nodes:
+          if n._layer > m_layer:
+            m_layer = n._layer
+      self._max_layer = m_layer
+  # End max_layer_node();
+  
 # End AdjacencyMatrix Class;
