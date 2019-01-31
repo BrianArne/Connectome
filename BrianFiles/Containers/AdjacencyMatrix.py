@@ -22,6 +22,7 @@ class AdjacencyMatrix:
 
   '''
   Checks if the input_node terminates before reaching original inputs
+  @returns True if the input node has a corresponding node in the _nodes list
   '''
   def check_termination(self, node_number, layer):
       layer_hash = self._layer_hash[layer]
@@ -33,8 +34,7 @@ class AdjacencyMatrix:
   '''
   def construct_empty_matrix(self):
     self.init_position_hash()
-    total_layer_nodes = len(self._nodes)
-    self._matrix = [[0] * (total_layer_nodes) for n in range (total_layer_nodes)]
+    self._matrix = [[0] * (len(self._nodes)) for n in range (len(self._nodes))]
   # End construct_empty_matrix();
 
   '''
@@ -54,6 +54,7 @@ class AdjacencyMatrix:
 
   '''
   Initializes hash with @key = layer, @value = layer_hash
+  Calls init_layer_hash()
   '''
   def init_hash(self):
       for i in range(1, self._max_layer + 1):
@@ -72,6 +73,7 @@ class AdjacencyMatrix:
 
   '''
   Initializes hash with @key = node, @value = position in the matrix
+  Calls init_hash()
   '''
   def init_position_hash(self):
       self.max_layer()
