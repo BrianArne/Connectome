@@ -62,5 +62,3 @@ for n in connect._position_hash:
         print(depth_first_order(s_graph, pos, True, True)[1])
         print('\n')
 
-for key in connect._position_hash:
-    print(str(key), connect._position_hash[key])
