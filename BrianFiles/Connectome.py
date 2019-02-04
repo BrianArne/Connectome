@@ -55,10 +55,8 @@ print(s_graph)
 # Printing each node's connectivity
 print("")
 print("***Printing each node and its connectivity***")
-for n in connect._position_hash:
-    if n._layer is 1:
-        pos = connect._position_hash[n]
-        print(str(n), pos)
-        print(depth_first_order(s_graph, pos, True, True)[1])
+for i, n in enumerate(connect._nodes):
+    if connect._nodes[i]._layer is 1:
+        print(i, str(n))
+        print(depth_first_order(s_graph, i, True, True)[1])
         print('\n')
-

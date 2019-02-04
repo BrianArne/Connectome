@@ -42,14 +42,12 @@ class AdjacencyMatrix:
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
-    for n in self._nodes:
+    for i, n in enumerate(self._nodes):
         for j in n._input_nodes:
             if (n._layer + 1) <= self._max_layer and self.check_termination(j, n._layer+1):
                 l_hash = self._layer_hash[n._layer+1]
                 pos = l_hash[j]
-                self._matrix[self._position_hash[n]][pos] = 1
-
-
+                self._matrix[i][pos] = 1
   # End fill_matrix();
 
   '''
@@ -77,10 +75,8 @@ class AdjacencyMatrix:
   '''
   def init_position_hash(self):
       self.max_layer()
-      position = 0
-      for n in self._nodes:
-          self._position_hash[n] = position
-          position += 1
+      for i, n in enumerate(self._nodes):
+          self._position_hash[n] = i
       self.init_hash()
   # End init_position_hash();
 
