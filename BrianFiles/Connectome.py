@@ -1,10 +1,11 @@
 import sys
+import re
 import Globals
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
 
 from scipy.sparse import csgraph
-from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense, depth_first_tree
+from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense
 
 
 # Picks file to run
@@ -47,10 +48,23 @@ parsed_data.construct_node_container()
 connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
 
+def connection_to_pairs(cs_str):
+  str_pairs = re.findall('\(\d*, \d*\)', cs_str)
+  num_pairs_list = []
+  for s in str_pairs:
+    n_arr = re.findall('\d', s)
+    pair = (int(n_arr[0]), int(n_arr[1]))
+    num_pairs_list.append(pair)
+  return num_pairs_list
+
+
+# End Connection_to_pairs();
+
 # csgraph depth_first_search run on matrix from AdjacencyMatrix
-s_graph = csgraph_from_dense(connect._matrix)
+cs_graph = csgraph_from_dense(connect._matrix)
 print("***Print of compressed graph connectivity***")
-print(s_graph)
+print(connection_to_pairs(str(cs_graph)))
+
 
 # Printing each node's connectivity
 print("")
@@ -58,5 +72,5 @@ print("***Printing each node and its connectivity***")
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
         print(i, str(n))
-        print(depth_first_order(s_graph, i, True, True)[1])
+        print(depth_first_order(cs_graph, i, True, True)[1])
         print('\n')

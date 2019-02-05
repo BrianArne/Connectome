@@ -1,8 +1,11 @@
 ToDo:
 
-MatlabNodeParser:
+Graphing:
+  Create a graph; g = Graph();
+  Graphs have verticies (given id 0 - n); graph.add_verticies();
+  Graphs have edges (id to id pair); graph.add_edges([(0,1), (1,2)]);
+    Can probably just make a arr of pairs from the print(s_graph)
 
-AdjacencyMatrix:
 
 GUI thoughts:
   -All valid nodes show up around the circle but there is no connectivity shown.
