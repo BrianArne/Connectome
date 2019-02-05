@@ -1,9 +1,11 @@
+import Globals #Mostly testing variables
+import re #Regex
 import sys
-import re
-import Globals
+
+
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
-
+from igraph import *
 from scipy.sparse import csgraph
 from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense
 
@@ -41,14 +43,19 @@ try:
   parsed_data.load_data()
 except IOError:
     print("Terminating...")
-    sys.exit()
+    exit()
+
+# Create nodes
 parsed_data.construct_node_container()
 
 # Initialize AdjacencyMatrix
 connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
 
-def connection_to_pairs(cs_str):
+'''
+Converts str(csgraph) to a list of integer pairs to be used by visual igraph
+'''
+def to_int_pairs(cs_str):
   str_pairs = re.findall('\(\d*, \d*\)', cs_str)
   num_pairs_list = []
   for s in str_pairs:
@@ -56,14 +63,14 @@ def connection_to_pairs(cs_str):
     pair = (int(n_arr[0]), int(n_arr[1]))
     num_pairs_list.append(pair)
   return num_pairs_list
+# End to_int_pairs();
 
 
-# End Connection_to_pairs();
-
-# csgraph depth_first_search run on matrix from AdjacencyMatrix
+# Prints connectivity pairs
 cs_graph = csgraph_from_dense(connect._matrix)
 print("***Print of compressed graph connectivity***")
-print(connection_to_pairs(str(cs_graph)))
+int_pairs = to_int_pairs(str(cs_graph))
+print(int_pairs)
 
 
 # Printing each node's connectivity
@@ -74,3 +81,9 @@ for i, n in enumerate(connect._nodes):
         print(i, str(n))
         print(depth_first_order(cs_graph, i, True, True)[1])
         print('\n')
+
+
+g = Graph()
+g.add_vertices(len(connect._nodes))
+g.add_edges(int_pairs)
+print(g)
