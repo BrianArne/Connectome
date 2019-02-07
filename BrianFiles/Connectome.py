@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
 from igraph import *
-from scipy.sparse import csgraph
+from scipy.sparse import csgraph, csr_matrix
 from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense
 
 '''
@@ -61,10 +61,27 @@ def dist (A,B):
 # End dist();
 
 '''
+@Returns list of edges tuples from a list of depth_first_order data
+'''
+def extract_edges(matrix):
+  edges = []
+  for m in matrix:
+    for index in range(len(m)):
+      if m[index] == -9999:
+        continue
+      else:
+        edge = (m[index], index)
+        if edge not in edges:
+          edges.append(edge)
+  return edges
+# End extract_edges
+
+'''
 Converts str(csgraph) to a list of integer pairs to be used by visual igraph
 '''
 def to_int_pairs(cs_str):
   str_pairs = re.findall('\(\d*, \d*\)', cs_str)
+  print(str_pairs)
   num_pairs_list = []
   for s in str_pairs:
     n_arr = re.findall('\d', s)
@@ -131,36 +148,50 @@ connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
 
 # Prints connectivity pairs
-cs_graph = csgraph_from_dense(connect._matrix)
+csr_graph = csr_matrix(connect._matrix)
 print("***Print of compressed graph connectivity***")
-int_pairs = to_int_pairs(str(cs_graph)) # Used in adding graph edges
+#print(cs_graph)
+print(csr_graph[0, :])
+int_pairs = to_int_pairs(str(csr_graph)) # Used in adding graph edges
 #print(int_pairs)
 
 
 # Printing each node's connectivity
-'''
+matrix_list = []
+for i, n in enumerate(connect._nodes):
+    if connect._nodes[i]._layer is 1:
+        matrix_list.append(depth_first_order(csr_graph, i, True, True)[1])
+
+# Create Edges
+edges = extract_edges(matrix_list)
+
+# Printing each node's connectivity
 print("")
 print("***Printing each node and its connectivity***")
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
         print(i, str(n))
-        print(depth_first_order(cs_graph, i, True, True)[1])
+        print(depth_first_order(csr_graph, i, True, True)[1])
         print('\n')
-'''
+
+print(edges)
 
 
 g = Graph()
 g.add_vertices(len(connect._nodes))
-g.add_edges(int_pairs)
+g.add_edges(edges)
 g.vs["Layer"] = [l._layer for l in connect._nodes]
 g.vs["Node"] = [n._node_number for n in connect._nodes]
 g.es["Weight"] =  1
 E = [e.tuple for e in g.es] # Get the edge list as list of tuples haveing as elements the end node 
                             # indecies
 V = list(g.vs)
-labels = [v["Node"] for v in V]
-print(len(E))
-print(g.es["Weight"])
+labels = []
+for v in V:
+  title = "Layer: " + str(v["Layer"]) + " Node: " + str(v["Node"])
+  labels.append(title)
+#print(len(E))
+#print(g.es["Weight"])
 layt = g.layout('circular')
 L = len(layt)
 
@@ -178,7 +209,7 @@ params = [1.2, 1.5, 1.8, 2.1]
 
 lines=[]# the list of dicts defining   edge  Plotly attributes
 edge_info=[]# the list of points on edges where  the information is placed
-
+'''
 for j, e in enumerate(E):
   A=np.array(layt[e[0]])
   B=np.array(layt[e[1]])
@@ -255,3 +286,4 @@ data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
 #plotly.offline.init_notebook_mode()
 plotly.offline.iplot(fig, filename="Connectome Graph")
+'''
