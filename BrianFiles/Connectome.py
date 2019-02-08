@@ -84,6 +84,18 @@ def get_idx_interv(d, D):
   return  k-1
 # End get_idx_interv();
 
+'''
+Prints all nodes connectivity
+'''
+def print_connectivity(csr_graph, nodes):
+  print("***Printing each node and its connectivity***")
+  for i, n in enumerate(nodes):
+      if n._layer is connect._max_layer: continue # Connect._max_layer is kinda global, change.
+      print(i, str(n))
+      print(depth_first_order(csr_graph, i, True, True)[1])
+      print('\n')
+# End print_connectivity();
+
 #############################
 #########   MAIN   ##########
 #############################
@@ -126,20 +138,16 @@ except IOError:
 # Create nodes
 parsed_data.construct_node_container()
 
-# Initialize AdjacencyMatrix
+# Initialize AdjacencyMatrix and makes into csr_graph
 connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
+csr_graph = csr_matrix(connect._matrix)
+
+# Provides list to users and what they want queried
 list_output_nums = [n._node_number for n in connect._output_nodes]
 query = [int(n) for n in raw_input("Select which outputs would you like to see, seperate by a space " + str(list_output_nums) + ": ").split()]
-# Inputs will be listed as strings and need to be converted to nums
-print(query)
 
-
-# Prints connectivity pairs
-csr_graph = csr_matrix(connect._matrix)
-print("***Print of compressed graph connectivity***")
-
-# Printing each node's connectivity
+# Makes list of each nodes connectivity
 matrix_list = []
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
@@ -149,14 +157,15 @@ for i, n in enumerate(connect._nodes):
 edges = extract_edges(matrix_list)
 
 # Printing each node's connectivity
-print("")
-print("***Printing each node and its connectivity***")
-for i, n in enumerate(connect._nodes):
-    if connect._nodes[i]._layer is 1:
-        print(i, str(n))
-        print(depth_first_order(csr_graph, i, True, True)[1])
-        print('\n')
+print_connectivity(csr_graph, connect._nodes)
 
+
+#####################
+### Graph Related ###
+#####################
+'''
+The following needs to be moved into a class
+'''
 g = Graph()
 g.add_vertices(len(connect._nodes))
 g.add_edges(edges)

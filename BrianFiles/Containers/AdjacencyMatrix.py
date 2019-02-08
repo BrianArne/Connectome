@@ -19,6 +19,7 @@ class AdjacencyMatrix:
     self._max_layer = None
     self._nodes = node_list
     self._output_nodes = []
+    self._input_node_positions = []
   # End __init__();
 
   '''
@@ -39,7 +40,7 @@ class AdjacencyMatrix:
   # End construct_empty_matrix();
 
   '''
-  Fills matrix to make adjacency matrix
+  Fills matrix to make adjacency matrix and initializes input and output node list
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
@@ -49,8 +50,12 @@ class AdjacencyMatrix:
                 l_hash = self._layer_hash[n._layer+1]
                 pos = l_hash[j]
                 self._matrix[i][pos] = 1
-            if n._layer is 1 and n not in self._output_nodes:
-                self._output_nodes.append(n)
+        # Adds to ouputs or inputs if node is applicable
+        if n._layer is 1 and n not in self._output_nodes:
+            self._output_nodes.append(n)
+        if n._layer is self._max_layer and i not in self._input_node_positions:
+            self._input_node_positions.append(i)
+                
   # End fill_matrix();
 
   '''
