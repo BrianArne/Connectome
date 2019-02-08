@@ -18,6 +18,7 @@ class AdjacencyMatrix:
     self._matrix = None
     self._max_layer = None
     self._nodes = node_list
+    self._output_nodes = []
   # End __init__();
 
   '''
@@ -48,6 +49,8 @@ class AdjacencyMatrix:
                 l_hash = self._layer_hash[n._layer+1]
                 pos = l_hash[j]
                 self._matrix[i][pos] = 1
+            if n._layer is 1 and n not in self._output_nodes:
+                self._output_nodes.append(n)
   # End fill_matrix();
 
   '''
