@@ -129,6 +129,11 @@ parsed_data.construct_node_container()
 # Initialize AdjacencyMatrix
 connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
+list_output_nums = [n._node_number for n in connect._output_nodes]
+query = [int(n) for n in raw_input("Select which outputs would you like to see, seperate by a space " + str(list_output_nums) + ": ").split()]
+# Inputs will be listed as strings and need to be converted to nums
+print(query)
+
 
 # Prints connectivity pairs
 csr_graph = csr_matrix(connect._matrix)
@@ -146,7 +151,6 @@ edges = extract_edges(matrix_list)
 # Printing each node's connectivity
 print("")
 print("***Printing each node and its connectivity***")
-'''This does not! calculate all routes!'''
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
         print(i, str(n))
