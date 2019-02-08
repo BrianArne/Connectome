@@ -1,9 +1,7 @@
 import Globals #Mostly testing variables
-import re #Regex
 import sys
 import numpy as np
 import plotly
-#import plotly.plotly as py
 import plotly.graph_objs as go
 
 from Containers.AdjacencyMatrix import AdjacencyMatrix
@@ -77,20 +75,6 @@ def extract_edges(matrix):
 # End extract_edges
 
 '''
-Converts str(csgraph) to a list of integer pairs to be used by visual igraph
-'''
-def to_int_pairs(cs_str):
-  str_pairs = re.findall('\(\d*, \d*\)', cs_str)
-  print(str_pairs)
-  num_pairs_list = []
-  for s in str_pairs:
-    n_arr = re.findall('\d', s)
-    pair = (int(n_arr[0]), int(n_arr[1]))
-    num_pairs_list.append(pair)
-  return num_pairs_list
-# End to_int_pairs();
-
-'''
 Returns index of the interval the distance d belongs to
 '''
 def get_idx_interv(d, D):
@@ -99,7 +83,6 @@ def get_idx_interv(d, D):
     k+=1
   return  k-1
 # End get_idx_interv();
-
 
 #############################
 #########   MAIN   ##########
@@ -150,11 +133,6 @@ connect.fill_matrix();
 # Prints connectivity pairs
 csr_graph = csr_matrix(connect._matrix)
 print("***Print of compressed graph connectivity***")
-#print(cs_graph)
-print(csr_graph[0, :])
-int_pairs = to_int_pairs(str(csr_graph)) # Used in adding graph edges
-#print(int_pairs)
-
 
 # Printing each node's connectivity
 matrix_list = []
@@ -168,14 +146,12 @@ edges = extract_edges(matrix_list)
 # Printing each node's connectivity
 print("")
 print("***Printing each node and its connectivity***")
+'''This does not! calculate all routes!'''
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
         print(i, str(n))
         print(depth_first_order(csr_graph, i, True, True)[1])
         print('\n')
-
-print(edges)
-
 
 g = Graph()
 g.add_vertices(len(connect._nodes))
@@ -190,8 +166,6 @@ labels = []
 for v in V:
   title = "Layer: " + str(v["Layer"]) + " Node: " + str(v["Node"])
   labels.append(title)
-#print(len(E))
-#print(g.es["Weight"])
 layt = g.layout('circular')
 L = len(layt)
 
@@ -209,7 +183,7 @@ params = [1.2, 1.5, 1.8, 2.1]
 
 lines=[]# the list of dicts defining   edge  Plotly attributes
 edge_info=[]# the list of points on edges where  the information is placed
-'''
+
 for j, e in enumerate(E):
   A=np.array(layt[e[0]])
   B=np.array(layt[e[1]])
@@ -218,7 +192,7 @@ for j, e in enumerate(E):
   b=[A, A/params[K], B/params[K], B]
   color=edge_colors[K]
   pts=BezierCv(b, nr=5)
-  text=str(V[e[0]]['Layer'])+' to '+str(V[e[1]]['Node'])+' '+str(Weights[j])+' pts' # added first two                                                                                   str() methods here
+  text=str(V[e[0]]['Layer'])+' to '+str(V[e[1]]['Node'])+' '+str(Weights[j])+' pts'
   mark=deCasteljau(b,0.9)
   edge_info.append(go.Scatter(x=[mark[0]], 
                               y=[mark[1]], 
@@ -276,7 +250,7 @@ layout=go.Layout(title=title,
                 margin = dict(l = 40,
                               r = 40,
                               b = 85,
-                              t = 100), #Should there be a comma after 100?
+                              t = 100),
                 hovermode = 'closest',
                 annotations = list([make_annotation(anno_text1, -0.07),
                                     make_annotation(anno_text2, -0.09),
@@ -285,5 +259,4 @@ layout=go.Layout(title=title,
 data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
 #plotly.offline.init_notebook_mode()
-plotly.offline.iplot(fig, filename="Connectome Graph")
-'''
+#plotly.offline.iplot(fig, filename="Connectome Graph")
