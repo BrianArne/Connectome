@@ -63,9 +63,12 @@ def create_edges(node, edges_l, output_id):
     for i in node._input_nodes:
       # Add edge and recursive call
       pos_hash = layer_hash[node._layer + 1]
+      if int(i) not in pos_hash:
+        continue
       input_position = pos_hash[i]
       edge = (position_hash[node], input_position)
-      edges_l.append(edge)
+      if edge not in edges_l:
+        edges_l.append(edge)
       new_node = all_nodes[input_position]
       create_edges(new_node, edges_l, output_id)
 
@@ -88,7 +91,7 @@ def deCasteljau(b,t):
 # End deCasteljau();
 
 '''
-Computes the distance between 2 points A and B
+@Returns the distance between 2 points A and B
 '''
 def dist (A,B):
   return np.linalg.norm(np.array(A)-np.array(B))
@@ -177,7 +180,6 @@ parsed_data.construct_node_container()
 # Initialize AdjacencyMatrix and makes into csr_graph
 connect = AdjacencyMatrix(parsed_data._node_container)
 connect.fill_matrix();
-csr_graph = csr_matrix(connect._matrix)
 
 # Provides list to users and what they want queried
 list_output_nums = [n._node_number for n in connect._output_nodes]
@@ -216,9 +218,15 @@ for i, n in enumerate(connect._nodes):
 '''
 
 # Create Edges
-edges = output_edge_dict[all_nodes[0]]
-print("HERE")
+# edges = output_edge_dict[all_nodes[1]]
+edges= []
+for key in output_edge_dict:
+  for e in output_edge_dict[key]:
+    for t in e:
+      if t not in edges:
+        edges.append(t)
 print(edges)
+
 
 # Printing each node's connectivity
 #print_connectivity(csr_graph, connect._nodes)
@@ -232,12 +240,7 @@ The following needs to be moved into a class
 '''
 g = Graph()
 g.add_vertices(len(connect._nodes))
-new_edge = []
-for i in edges:
-  for j in i:
-    new_edge.append(j)
-print(new_edge)
-g.add_edges(new_edge)
+g.add_edges(edges)
 g.vs["Layer"] = [l._layer for l in connect._nodes]
 g.vs["Node"] = [n._node_number for n in connect._nodes]
 g.es["Weight"] =  1
