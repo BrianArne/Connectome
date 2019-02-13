@@ -39,6 +39,42 @@ def BezierCv(b, nr=5):
 # End BezierCv();
 
 '''
+Does a depth first traversal to generate all paths from outputs to inputs, appends to global paths
+'''
+def create_edges(node, edges_l, output_id):
+  global position_hash
+  global input_nodes
+  global paths
+  global layer_hash
+  global all_nodes
+ 
+  '''
+  print("***NEW CALL***")
+  print(position_hash[node], input_nodes)
+  print("INPUT NODES: ", node._input_nodes)
+  print("len(Inputs) == 0 ?: ", len(node._input_nodes) is 0)
+  print("Position in input_nodes ?: ", position_hash[node] in input_nodes)
+  '''
+
+  if (len(node._input_nodes) is 0 and position_hash[node] in input_nodes):
+    paths.append(deepcopy(edges_l))
+    return
+  else:
+    for i in node._input_nodes:
+      # Add edge and recursive call
+      pos_hash = layer_hash[node._layer + 1]
+      input_position = pos_hash[i]
+      edge = (position_hash[node], input_position)
+      edges_l.append(edge)
+      new_node = all_nodes[input_position]
+      create_edges(new_node, edges_l, output_id)
+
+      # Remove edge after backing out of recursive call
+      edges_l.remove(edge)
+
+# End create_edges();
+
+'''
 Used to create aesthetic curve from node to node
 '''
 def deCasteljau(b,t): 
@@ -147,17 +183,45 @@ csr_graph = csr_matrix(connect._matrix)
 list_output_nums = [n._node_number for n in connect._output_nodes]
 query = [int(n) for n in raw_input("Select which outputs would you like to see, seperate by a space " + str(list_output_nums) + ": ").split()]
 
+# Create look up for edges based on output nodes
+output_edge_dict = {} 
+for n in connect._output_nodes:
+  output_edge_dict[n] = None
+
+# def create_edges(current_node, edges_l, output_id)
+'''Globals, should be moved to class'''
+position_hash = connect._position_hash
+input_nodes = connect._input_node_positions
+paths = []
+layer_hash = connect._layer_hash
+all_nodes = connect._nodes
+output_nodes = connect._output_nodes
+edges_l = []
+for n in output_nodes:
+  create_edges(n, edges_l, n._node_number)
+  output_edge_dict[n] = deepcopy(paths)
+  '''
+  for i, n in enumerate(connect._nodes):
+    print (i, str(n))
+  print(paths)
+  '''
+  paths[:] = [] # Not sure if this is the right way to clear the list
+
+'''
 # Makes list of each nodes connectivity
 matrix_list = []
 for i, n in enumerate(connect._nodes):
     if connect._nodes[i]._layer is 1:
         matrix_list.append(depth_first_order(csr_graph, i, True, True)[1])
+'''
 
 # Create Edges
-edges = extract_edges(matrix_list)
+edges = output_edge_dict[all_nodes[0]]
+print("HERE")
+print(edges)
 
 # Printing each node's connectivity
-print_connectivity(csr_graph, connect._nodes)
+#print_connectivity(csr_graph, connect._nodes)
 
 
 #####################
@@ -168,7 +232,12 @@ The following needs to be moved into a class
 '''
 g = Graph()
 g.add_vertices(len(connect._nodes))
-g.add_edges(edges)
+new_edge = []
+for i in edges:
+  for j in i:
+    new_edge.append(j)
+print(new_edge)
+g.add_edges(new_edge)
 g.vs["Layer"] = [l._layer for l in connect._nodes]
 g.vs["Node"] = [n._node_number for n in connect._nodes]
 g.es["Weight"] =  1
