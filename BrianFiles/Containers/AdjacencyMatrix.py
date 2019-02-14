@@ -1,16 +1,16 @@
-import numpy as np
-from scipy.sparse import csgraph
-from scipy.sparse.csgraph import *
+from copy import deepcopy
+from scipy.sparse import csgraph # Can probably be removed. Only needed for print_connectivity
+from scipy.sparse.csgraph import * # Can probably be removed. Only needed for print_connectivity
 
 '''
 The AdjacencyMatrix class is designed to turn a node container supplied 
-on initialization into a sparse csgraph to allow a depth first search
-to be run on the sparse csgraph
+into a list of all possible paths and edges from output to input nodes. Typical usage is to
+fill_matirx() and then create paths
 '''
 class AdjacencyMatrix:
 
   '''
-  Constructor taking file name and variable inside file to be processed
+  Constructor taking a class NodeContainer
   '''
   def __init__(self, node_list):
     self._layer_hash = {}
@@ -20,8 +20,10 @@ class AdjacencyMatrix:
     self._nodes = node_list
     self._output_nodes = []
     self._input_node_positions = []
+    self._output_paths = {}
+    self._paths = []
   # End __init__();
-
+  
   '''
   Checks if the input_node terminates before reaching original inputs
   @returns True if the input node has a corresponding node in the _nodes list
@@ -38,6 +40,32 @@ class AdjacencyMatrix:
     self.init_position_hash()
     self._matrix = [[0] * (len(self._nodes)) for n in range (len(self._nodes))]
   # End construct_empty_matrix();
+
+  '''
+  Does a depth first traversal to generate all paths from outputs to inputs, appends to global paths
+  @Returns all paths for a given node to the inputs
+  '''
+  def create_paths(self, node, edges_l):
+    # base case: at a input node, append to path and recurse back out
+    if (len(node._input_nodes) is 0 and self._position_hash[node] in self._input_node_positions):
+      self._paths.append(deepcopy(edges_l))
+      return
+    # recurse case: Not at an input, add edge to current path and call again
+    else:
+      for i in node._input_nodes:
+        pos_hash = self._layer_hash[node._layer + 1]
+        if int(i) not in pos_hash:
+          continue
+        input_position = pos_hash[i]
+        edge = (self._position_hash[node], input_position)
+        if edge not in edges_l:
+          edges_l.append(edge)
+        new_node = self._nodes[input_position]
+        self.create_paths(new_node, edges_l)
+
+        # Remove edge after backing out of recursive call
+        edges_l.remove(edge)
+  # End create_paths();
 
   '''
   Fills matrix to make adjacency matrix and initializes input and output node list
@@ -57,6 +85,21 @@ class AdjacencyMatrix:
             self._input_node_positions.append(i)
                 
   # End fill_matrix();
+
+  '''
+  Adds a list of all edges assocated with each output node to _output_paths dictionary
+  '''
+  def generate_all_output_paths(self):
+    for n in self._output_nodes:
+      edge_l = []
+      self.create_paths(n, edge_l)
+      new_edge_l = []
+      for l in self._paths:
+        for e in l:
+          new_edge_l.append(e)
+      self._output_paths[n] = new_edge_l
+      self._paths[:] = []
+  # End append_output_paths();
 
   '''
   Initializes hash with @key = layer, @value = layer_hash
@@ -98,5 +141,19 @@ class AdjacencyMatrix:
             m_layer = n._layer
       self._max_layer = m_layer
   # End max_layer_node();
+
+  '''
+  Prints all nodes connectivity
+  @Depricated. Not used with current current model.
+  '''
+  def print_connectivity(self):
+    print("***Printing each node and its connectivity***")
+    csr_graph = csgraph_from_dense(self._matrix)
+    for i, n in enumerate(self._nodes):
+        if n._layer is self._max_layer: continue # Connect._max_layer is kinda global, change.
+        print(i, str(n))
+        print(depth_first_order(csr_graph, i, True, True)[1])
+        print('\n')
+  # End print_connectivity();
   
 # End AdjacencyMatrix Class;

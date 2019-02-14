@@ -7,8 +7,6 @@ import plotly.graph_objs as go
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
 from igraph import *
-from scipy.sparse import csgraph, csr_matrix
-from scipy.sparse.csgraph import depth_first_order, csgraph_from_dense
 
 '''
 List of copied functions from plot.ly
@@ -39,45 +37,6 @@ def BezierCv(b, nr=5):
 # End BezierCv();
 
 '''
-Does a depth first traversal to generate all paths from outputs to inputs, appends to global paths
-'''
-def create_edges(node, edges_l, output_id):
-  global position_hash
-  global input_nodes
-  global paths
-  global layer_hash
-  global all_nodes
- 
-  '''
-  print("***NEW CALL***")
-  print(position_hash[node], input_nodes)
-  print("INPUT NODES: ", node._input_nodes)
-  print("len(Inputs) == 0 ?: ", len(node._input_nodes) is 0)
-  print("Position in input_nodes ?: ", position_hash[node] in input_nodes)
-  '''
-
-  if (len(node._input_nodes) is 0 and position_hash[node] in input_nodes):
-    paths.append(deepcopy(edges_l))
-    return
-  else:
-    for i in node._input_nodes:
-      # Add edge and recursive call
-      pos_hash = layer_hash[node._layer + 1]
-      if int(i) not in pos_hash:
-        continue
-      input_position = pos_hash[i]
-      edge = (position_hash[node], input_position)
-      if edge not in edges_l:
-        edges_l.append(edge)
-      new_node = all_nodes[input_position]
-      create_edges(new_node, edges_l, output_id)
-
-      # Remove edge after backing out of recursive call
-      edges_l.remove(edge)
-
-# End create_edges();
-
-'''
 Used to create aesthetic curve from node to node
 '''
 def deCasteljau(b,t): 
@@ -98,20 +57,16 @@ def dist (A,B):
 # End dist();
 
 '''
-@Returns list of edges tuples from a list of depth_first_order data
+Returns a list of unique edges
 '''
-def extract_edges(matrix):
-  edges = []
-  for m in matrix:
-    for index in range(len(m)):
-      if m[index] == -9999:
-        continue
-      else:
-        edge = (m[index], index)
-        if edge not in edges:
-          edges.append(edge)
+def extract_unique_edges(output_nodes, edges_dict, user_query):
+  edges= []
+  for q in user_query:
+    for e in edges_dict[output_nodes[q-1]]: # This may have to be changed. Offset 1 if always ordered
+      if e not in edges:
+        edges.append(e)
   return edges
-# End extract_edges
+# End extract_unique_edges();
 
 '''
 Returns index of the interval the distance d belongs to
@@ -124,112 +79,80 @@ def get_idx_interv(d, D):
 # End get_idx_interv();
 
 '''
-Prints all nodes connectivity
+Ask the user for a file and loads data
+@Returns NodeParser
 '''
-def print_connectivity(csr_graph, nodes):
-  print("***Printing each node and its connectivity***")
-  for i, n in enumerate(nodes):
-      if n._layer is connect._max_layer: continue # Connect._max_layer is kinda global, change.
-      print(i, str(n))
-      print(depth_first_order(csr_graph, i, True, True)[1])
-      print('\n')
-# End print_connectivity();
+def query_file():
+  # File options
+  var = input("Which test file? " + 
+              "1) SetOne "+ 
+              "2) SetTwo "+ 
+              "3) SetThree "+ 
+              "4) Test "+ 
+              "5) T ")
+  if var == 1:
+    file_name = Globals.TESTING_DIR  + "SetOne.mat"
+    var_name = "SetOne"
+  elif var == 2:
+    file_name = Globals.TESTING_DIR + "SetTwo.mat"
+    var_name = "SetTwo"
+  elif var == 3:
+    file_name = Globals.TESTING_DIR + "SetThree.mat"
+    var_name = "SetThree"
+  elif var == 4:
+    file_name = Globals.TESTING_DIR + "Test.mat"
+    var_name = "Test"
+  elif var == 5:
+    file_name = Globals.TESTING_DIR + "T.mat"
+    var_name = "T"
+  else:
+    print("Bad input = SetOne")
+    file_name = "SetOne.mat"
+    var_name = "SetOne"
+
+  # Load data
+  parsed_data = MatlabNodeParser(file_name, var_name)
+  try:
+    parsed_data.load_data()
+  except IOError:
+      print("Terminating...")
+      exit()
+
+  return parsed_data
+# End query_file();
+
+'''
+Ask user forrequested outputs
+@Returns list of integers representing outputs
+'''
+def query_outputs(outputs):
+  list_output_nums = [n._node_number for n in outputs]
+  query = [int(n) for n in raw_input("Select which outputs would you like to see, seperate by a space " + str(list_output_nums) + ": ").split()]
+  for q in query:
+    if q not in list_output_nums:
+      raise Exception("Number provided: " + str(q) + " is not an available output:")
+  return query
+# End query_outputs;
+
 
 #############################
 #########   MAIN   ##########
 #############################
 
 # Picks file to run
-var = input("Which test file? " + 
-            "1) SetOne "+ 
-            "2) SetTwo "+ 
-            "3) SetThree "+ 
-            "4) Test "+ 
-            "5) T ")
-if var == 1:
-  file_name = Globals.TESTING_DIR  + "SetOne.mat"
-  var_name = "SetOne"
-elif var == 2:
-  file_name = Globals.TESTING_DIR + "SetTwo.mat"
-  var_name = "SetTwo"
-elif var == 3:
-  file_name = Globals.TESTING_DIR + "SetThree.mat"
-  var_name = "SetThree"
-elif var == 4:
-  file_name = Globals.TESTING_DIR + "Test.mat"
-  var_name = "Test"
-elif var == 5:
-  file_name = Globals.TESTING_DIR + "T.mat"
-  var_name = "T"
-else:
-  print("Bad input = SetOne")
-  file_name = "SetOne.mat"
-  var_name = "SetOne"
-
-# File loaded in
-parsed_data = MatlabNodeParser(file_name, var_name)
-try:
-  parsed_data.load_data()
-except IOError:
-    print("Terminating...")
-    exit()
-
-# Create nodes
-parsed_data.construct_node_container()
+data = query_file()
+data.construct_node_container()
 
 # Initialize AdjacencyMatrix and makes into csr_graph
-connect = AdjacencyMatrix(parsed_data._node_container)
+connect = AdjacencyMatrix(data._node_container)
 connect.fill_matrix();
+user_query = query_outputs(connect._output_nodes)
 
-# Provides list to users and what they want queried
-list_output_nums = [n._node_number for n in connect._output_nodes]
-query = [int(n) for n in raw_input("Select which outputs would you like to see, seperate by a space " + str(list_output_nums) + ": ").split()]
-
-# Create look up for edges based on output nodes
-output_edge_dict = {} 
-for n in connect._output_nodes:
-  output_edge_dict[n] = None
-
-# def create_edges(current_node, edges_l, output_id)
-'''Globals, should be moved to class'''
-position_hash = connect._position_hash
-input_nodes = connect._input_node_positions
-paths = []
-layer_hash = connect._layer_hash
-all_nodes = connect._nodes
-output_nodes = connect._output_nodes
-edges_l = []
-for n in output_nodes:
-  create_edges(n, edges_l, n._node_number)
-  output_edge_dict[n] = deepcopy(paths)
-  '''
-  for i, n in enumerate(connect._nodes):
-    print (i, str(n))
-  print(paths)
-  '''
-  paths[:] = [] # Not sure if this is the right way to clear the list
-
-'''
-# Makes list of each nodes connectivity
-matrix_list = []
-for i, n in enumerate(connect._nodes):
-    if connect._nodes[i]._layer is 1:
-        matrix_list.append(depth_first_order(csr_graph, i, True, True)[1])
-'''
+# Creates all paths
+connect.generate_all_output_paths()
 
 # Create Edges
-# edges = output_edge_dict[all_nodes[1]]
-edges= []
-for key in output_edge_dict:
-  for e in output_edge_dict[key]:
-    for t in e:
-      if t not in edges:
-        edges.append(t)
-print(edges)
-
-
-# Printing each node's connectivity
-#print_connectivity(csr_graph, connect._nodes)
+edges = extract_unique_edges(connect._nodes, connect._output_paths, user_query)
 
 
 #####################
