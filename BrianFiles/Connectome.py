@@ -4,6 +4,7 @@ import numpy as np
 import plotly
 import plotly.graph_objs as go
 
+from Containers.NodeContainer import NodeContainer
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
 from igraph import *
@@ -144,15 +145,16 @@ data = query_file()
 data.construct_node_container()
 
 # Initialize AdjacencyMatrix and makes into csr_graph
-connect = AdjacencyMatrix(data._node_container)
+container = NodeContainer(data._node_container)
+connect = AdjacencyMatrix(container)
 connect.fill_matrix();
-user_query = query_outputs(connect._output_nodes)
+user_query = query_outputs(connect.get_output_nodes())
 
 # Creates all paths
 connect.generate_all_output_paths()
 
 # Create Edges
-edges = extract_unique_edges(connect._nodes, connect._output_paths, user_query)
+edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
 
 
 #####################
@@ -162,10 +164,10 @@ edges = extract_unique_edges(connect._nodes, connect._output_paths, user_query)
 The following needs to be moved into a class
 '''
 g = Graph()
-g.add_vertices(len(connect._nodes))
+g.add_vertices(len(connect._node_container._nodes))
 g.add_edges(edges)
-g.vs["Layer"] = [l._layer for l in connect._nodes]
-g.vs["Node"] = [n._node_number for n in connect._nodes]
+g.vs["Layer"] = [l._layer for l in connect._node_container._nodes]
+g.vs["Node"] = [n._node_number for n in connect._node_container._nodes]
 g.es["Weight"] =  1
 E = [e.tuple for e in g.es] # Get the edge list as list of tuples haveing as elements the end node 
                             # indecies
