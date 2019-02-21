@@ -155,6 +155,7 @@ connect.generate_all_output_paths()
 
 # Create Edges
 edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
+edges.sort(key=lambda tup: tup[0])
 
 
 #####################
@@ -164,10 +165,10 @@ edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, 
 The following needs to be moved into a class
 '''
 g = Graph()
-g.add_vertices(len(connect._node_container._nodes))
+g.add_vertices(len(connect.get_nodes()))
 g.add_edges(edges)
-g.vs["Layer"] = [l._layer for l in connect._node_container._nodes]
-g.vs["Node"] = [n._node_number for n in connect._node_container._nodes]
+g.vs["Layer"] = [l._layer for l in connect.get_nodes()]
+g.vs["Node"] = [n._node_number for n in connect.get_nodes()]
 g.es["Weight"] =  1
 E = [e.tuple for e in g.es] # Get the edge list as list of tuples haveing as elements the end node 
                             # indecies

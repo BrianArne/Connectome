@@ -6,7 +6,7 @@ information about the inputs and outputs of the neural network
 class NodeContainer:
 
   def __init__(self, node_list):
-    self._input_node_positions = []
+    self._input_nodes = []
     self._max_layer = None
     self._nodes = node_list
     self._output_nodes = []
@@ -20,7 +20,7 @@ class NodeContainer:
   Finds and sets all _input_nodes
   '''
   def find_inputs(self):
-    self._input_node_positions = [n for n in self._nodes if n._layer == self._max_layer]
+    self._input_nodes = [n for n in self._nodes if n._layer == self._max_layer]
   # End find_outputs();
 
   '''
