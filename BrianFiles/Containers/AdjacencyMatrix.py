@@ -41,10 +41,8 @@ class AdjacencyMatrix:
   Does a depth first traversal to generate all paths from outputs to inputs, appends to global paths
   @Returns all paths for a given node to the inputs
   '''
-  # Need to change all input nodes to their positions values
   def create_paths(self, node, edges_l):
     # base case: at a input node, append to path and recurse back out
-    # if (len(node._input_nodes) is 0 and self._position_hash[node] in self.get_input_nodes()):
     if (len(node._input_nodes) is 0 and (node in self.get_input_nodes())):
       self._paths.append(deepcopy(edges_l))
       return
@@ -64,6 +62,18 @@ class AdjacencyMatrix:
         # Remove edge after backing out of recursive call
         edges_l.remove(edge)
   # End create_paths();
+
+  '''
+  Returns a list of unique edges
+  '''
+  def extract_unique_edges(self, user_query):
+    edges= []
+    for q in user_query:
+      for e in self._output_paths[self.get_output_nodes()[q-1]]:
+        if e not in edges:
+          edges.append(e)
+    return edges
+  # End extract_unique_edges();
 
   '''
   Fills matrix to make adjacency matrix

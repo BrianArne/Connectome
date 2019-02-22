@@ -57,17 +57,6 @@ def dist (A,B):
   return np.linalg.norm(np.array(A)-np.array(B))
 # End dist();
 
-'''
-Returns a list of unique edges
-'''
-def extract_unique_edges(output_nodes, edges_dict, user_query):
-  edges= []
-  for q in user_query:
-    for e in edges_dict[output_nodes[q-1]]: # This may have to be changed. Offset 1 if always ordered
-      if e not in edges:
-        edges.append(e)
-  return edges
-# End extract_unique_edges();
 
 '''
 Returns index of the interval the distance d belongs to
@@ -154,7 +143,8 @@ user_query = query_outputs(connect.get_output_nodes())
 connect.generate_all_output_paths()
 
 # Create Edges
-edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
+#edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
+edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
 
