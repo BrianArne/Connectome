@@ -124,6 +124,14 @@ def query_outputs(outputs):
   return query
 # End query_outputs;
 
+#############################
+#########  Matrix  ##########
+#############################
+
+# Makes empty matrix
+num_features = (78 * 77) / 2
+atlas_matrix = [[0] * num_features for n in range(num_features)]
+
 
 #############################
 #########   MAIN   ##########
@@ -159,16 +167,41 @@ g.add_vertices(len(connect.get_nodes()))
 g.add_edges(edges)
 g.vs["Layer"] = [l._layer for l in connect.get_nodes()]
 g.vs["Node"] = [n._node_number for n in connect.get_nodes()]
-g.es["Weight"] =  1
-E = [e.tuple for e in g.es] # Get the edge list as list of tuples haveing as elements the end node 
+g.vs.select(_degree=0).delete() # Removes blank nodes
+E = [e.tuple for e in g.es] # Get the edge list as list of tuples having as elements the end node 
                             # indecies
 V = list(g.vs)
 labels = []
 for v in V:
-  title = "Layer: " + str(v["Layer"]) + " Node: " + str(v["Node"])
-  labels.append(title)
+  if v["Layer"] is connect.get_max_layer():
+    title = "Insert region of brain here"
+    labels.append(title)
+  else:
+    title = "Layer: " + str(v["Layer"]) + " Node: " + str(v["Node"])
+    labels.append(title)
 layt = g.layout('circular')
 L = len(layt)
+
+node_color =[]
+list_cofc_colors = ['#b634bb',
+                    '#ed2939',
+                    '#72c7e7',
+                    '#024731',
+                    '#7ab800',
+                    '#f69240',
+                    '#d95e00',
+                    '#cd894e',
+                    '#0083be',
+                    '#dbceac',
+                    '#a79e70',
+                    '#beb9a6']
+for v in g.vs:
+  if v["Layer"] is connect.get_max_layer():
+    node_color.append('#660000')
+  elif v["Layer"] is 1:
+    node_color.append('#f0ab00')
+  else:
+    node_color.append(list_cofc_colors[v["Layer"] % (len(list_cofc_colors)-1)])
 
 node_color = ['#CCCCCC' for v in g.vs]
 line_color = ['#FFFFFF' for v in g.vs]
