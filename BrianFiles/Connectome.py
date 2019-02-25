@@ -125,13 +125,22 @@ def query_outputs(outputs):
 # End query_outputs;
 
 #############################
-#########  Matrix  ##########
+######  Atlas  Matrix  ######
 #############################
 
 # Makes empty matrix
-num_features = (78 * 77) / 2
-atlas_matrix = [[0] * num_features for n in range(num_features)]
+num_regions = 78
+atlas_matrix = [[0] * num_regions for n in range(num_regions)]
 
+feature_id = 1 # 1 index because all nodes are 1 indexed
+offset = 1
+feature_to_matrix_hash = {}
+for i in range(len(atlas_matrix)):
+  for j in range(offset, len(atlas_matrix[i])):
+      atlas_matrix[i][j] = feature_id
+      feature_to_matrix_hash[feature_id] = (i, j)
+      feature_id += 1
+  offset += 1
 
 #############################
 #########   MAIN   ##########
@@ -155,7 +164,6 @@ connect.generate_all_output_paths()
 edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
-
 #####################
 ### Graph Related ###
 #####################
@@ -167,6 +175,7 @@ g.add_vertices(len(connect.get_nodes()))
 g.add_edges(edges)
 g.vs["Layer"] = [l._layer for l in connect.get_nodes()]
 g.vs["Node"] = [n._node_number for n in connect.get_nodes()]
+g.es["Weight"] = 1
 g.vs.select(_degree=0).delete() # Removes blank nodes
 E = [e.tuple for e in g.es] # Get the edge list as list of tuples having as elements the end node 
                             # indecies
