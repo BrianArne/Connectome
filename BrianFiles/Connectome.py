@@ -143,6 +143,15 @@ for i in range(len(atlas_matrix)):
   offset += 1
 
 #############################
+######  Parse  Atlas   ######
+#############################
+
+# Generates list of x, y, z, name for each region
+with open('aal.csv') as f:
+    regions = [map(str, i.split(',')) for i in f]
+
+
+#############################
 #########   MAIN   ##########
 #############################
 
