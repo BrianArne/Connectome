@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import plotly
 import plotly.graph_objs as go
+import subprocess
 
 from Containers.NodeContainer import NodeContainer
 from Containers.AdjacencyMatrix import AdjacencyMatrix
@@ -150,6 +151,17 @@ for i in range(len(atlas_matrix)):
 with open('aal.csv') as f:
     regions = [map(str, i.split(',')) for i in f]
 
+#############################
+######   .Node File    ######
+#############################
+f = open("atlas.node", "w+")
+for line in regions:
+  x = line[0]
+  y = line[1]
+  z = line[2]
+  name = line[3]
+  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(1) + '\t' + name)
+f.close()
 
 #############################
 #########   MAIN   ##########
@@ -318,3 +330,7 @@ data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
 #plotly.offline.init_notebook_mode()
 plotly.offline.plot(fig, filename="Connectome Graph")
+
+# SurfIce
+
+subprocess.call(['/home/workstation6/sw/surfice/Surf_Ice/surfice','-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'/data2/Connectome2018_project/BrianFiles/atlas.node\');SHADERXRAY(0.5, 0.1);END.']) 
