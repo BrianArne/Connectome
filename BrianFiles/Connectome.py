@@ -190,10 +190,16 @@ E = [e.tuple for e in g.es] # Get the edge list as list of tuples having as elem
                             # indecies
 V = list(g.vs)
 labels = []
+# Creates hover labels for verticies
 for v in V:
+  # Hovering over inputs shows two regions from Connectivity Atlas Matrix
   if v["Layer"] is connect.get_max_layer():
-    title = "Insert region of brain here"
+    connect_pair = feature_to_matrix_hash[v["Node"]]
+    reg_one = regions[connect_pair[0]][3].strip('\n')
+    reg_two = regions[connect_pair[1]][3]
+    title = reg_one + " <--> " + reg_two
     labels.append(title)
+  # Hovering shows node number and layer
   else:
     title = "Layer: " + str(v["Layer"]) + " Node: " + str(v["Node"])
     labels.append(title)
@@ -213,6 +219,7 @@ list_cofc_colors = ['#b634bb',
                     '#dbceac',
                     '#a79e70',
                     '#beb9a6']
+# Colors Inputs and Outputs uniquely. Other layers assigned from color list
 for v in g.vs:
   if v["Layer"] is connect.get_max_layer():
     node_color.append('#660000')
@@ -221,7 +228,6 @@ for v in g.vs:
   else:
     node_color.append(list_cofc_colors[v["Layer"] % (len(list_cofc_colors)-1)])
 
-node_color = ['#CCCCCC' for v in g.vs]
 line_color = ['#FFFFFF' for v in g.vs]
 edge_colors=['#d4daff','#84a9dd', '#5588c8', '#6d8acf']
 
@@ -311,4 +317,4 @@ layout=go.Layout(title=title,
 data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
 #plotly.offline.init_notebook_mode()
-#plotly.offline.iplot(fig, filename="Connectome Graph")
+plotly.offline.plot(fig, filename="Connectome Graph")
