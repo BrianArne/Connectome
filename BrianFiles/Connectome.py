@@ -151,17 +151,6 @@ for i in range(len(atlas_matrix)):
 with open('aal.csv') as f:
     regions = [map(str, i.split(',')) for i in f]
 
-#############################
-######   .Node File    ######
-#############################
-f = open("atlas.node", "w+")
-for line in regions:
-  x = line[0]
-  y = line[1]
-  z = line[2]
-  name = line[3]
-  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(1) + '\t' + name)
-f.close()
 
 #############################
 #########   MAIN   ##########
@@ -184,6 +173,30 @@ connect.generate_all_output_paths()
 #edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
 edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
+
+
+#############################
+######   .Node File    ######
+#############################
+l_nodes = []
+for n in connect.get_input_nodes():
+  draw_nodes = feature_to_matrix_hash[n._node_number]
+  print(feature_to_matrix_hash[n._node_number])
+  if draw_nodes[0] not in l_nodes:
+    l_nodes.append(draw_nodes[0])
+  if draw_nodes[1] not in l_nodes:
+    l_nodes.append(draw_nodes[1])
+
+
+f = open("atlas.node", "w+")
+for index in l_nodes:
+  reg = regions[index]
+  x = reg[0]
+  y = reg[1]
+  z = reg[2]
+  name = reg[3]
+  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(1) + '\t' + name)
+f.close()
 
 #####################
 ### Graph Related ###
