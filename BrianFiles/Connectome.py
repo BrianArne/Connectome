@@ -5,6 +5,7 @@ import plotly
 import plotly.graph_objs as go
 import subprocess
 
+from AtlasMatrix import AtlasMatrix
 from Containers.NodeContainer import NodeContainer
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
@@ -125,32 +126,6 @@ def query_outputs(outputs):
   return query
 # End query_outputs;
 
-#############################
-######  Atlas  Matrix  ######
-#############################
-
-# Makes empty matrix
-num_regions = 78
-atlas_matrix = [[0] * num_regions for n in range(num_regions)]
-
-feature_id = 1 # 1 index because all nodes are 1 indexed
-offset = 1
-feature_to_matrix_hash = {}
-for i in range(len(atlas_matrix)):
-  for j in range(offset, len(atlas_matrix[i])):
-      atlas_matrix[i][j] = feature_id
-      feature_to_matrix_hash[feature_id] = (i, j)
-      feature_id += 1
-  offset += 1
-
-#############################
-######  Parse  Atlas   ######
-#############################
-
-# Generates list of x, y, z, name for each region
-with open('aal.csv') as f:
-    regions = [map(str, i.split(',')) for i in f]
-
 
 #############################
 #########   MAIN   ##########
@@ -170,32 +145,13 @@ user_query = query_outputs(connect.get_output_nodes())
 connect.generate_all_output_paths()
 
 # Create Edges
-#edges = extract_unique_edges(connect.get_output_nodes(), connect._output_paths, user_query)
 edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
+# Create Atlas Connectivty Matrix, Freature Mapping, and .Node file
+# !! Need to allow user to give csv file
+atlas = AtlasMatrix("aal.csv", connect.get_input_nodes())
 
-#############################
-######   .Node File    ######
-#############################
-l_nodes = []
-for n in connect.get_input_nodes():
-  draw_nodes = feature_to_matrix_hash[n._node_number]
-  if draw_nodes[0] not in l_nodes:
-    l_nodes.append(draw_nodes[0])
-  if draw_nodes[1] not in l_nodes:
-    l_nodes.append(draw_nodes[1])
-
-
-f = open("atlas.node", "w+")
-for index in l_nodes:
-  reg = regions[index]
-  x = reg[0]
-  y = reg[1]
-  z = reg[2]
-  name = reg[3]
-  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(2.2) + '\t' + name)
-f.close()
 
 #####################
 ### Graph Related ###
@@ -218,9 +174,9 @@ labels = []
 for v in V:
   # Hovering over inputs shows two regions from Connectivity Atlas Matrix
   if v["Layer"] is connect.get_max_layer():
-    connect_pair = feature_to_matrix_hash[v["Node"]]
-    reg_one = regions[connect_pair[0]][3].strip('\n')
-    reg_two = regions[connect_pair[1]][3]
+    connect_pair = atlas._feature_to_matrix_hash[v["Node"]]
+    reg_one = atlas._regions_list[connect_pair[0]][3].strip('\n')
+    reg_two = atlas._regions_list[connect_pair[1]][3]
     title = reg_one + " <--> " + reg_two
     labels.append(title)
   # Hovering shows node number and layer
