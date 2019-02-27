@@ -181,7 +181,6 @@ edges.sort(key=lambda tup: tup[0])
 l_nodes = []
 for n in connect.get_input_nodes():
   draw_nodes = feature_to_matrix_hash[n._node_number]
-  print(feature_to_matrix_hash[n._node_number])
   if draw_nodes[0] not in l_nodes:
     l_nodes.append(draw_nodes[0])
   if draw_nodes[1] not in l_nodes:
@@ -195,7 +194,7 @@ for index in l_nodes:
   y = reg[1]
   z = reg[2]
   name = reg[3]
-  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(1) + '\t' + name)
+  f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(2.2) + '\t' + name)
 f.close()
 
 #####################
@@ -314,12 +313,8 @@ def make_annotation(anno_text, y_coord):
               xanchor='left',
               yanchor='bottom',
               font=dict(size=12))
-
-anno_text1 = "This is a test graph"
-anno_text2 = "Do we get a graph?"
-anno_text3 = "How long till we get a graph?"
-width = 800
-height = 850
+width = 1450
+height = 1500
 title = "Connectome Graph"
 
 layout=go.Layout(title=title,
@@ -334,16 +329,12 @@ layout=go.Layout(title=title,
                               r = 40,
                               b = 85,
                               t = 100),
-                hovermode = 'closest',
-                annotations = list([make_annotation(anno_text1, -0.07),
-                                    make_annotation(anno_text2, -0.09),
-                                    make_annotation(anno_text3, -0.11)])
-                )
+                hovermode = 'closest')
+
 data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
 #plotly.offline.init_notebook_mode()
 plotly.offline.plot(fig, filename="Connectome Graph")
 
 # SurfIce
-
 subprocess.call(['/home/workstation6/sw/surfice/Surf_Ice/surfice','-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'/data2/Connectome2018_project/BrianFiles/atlas.node\');SHADERXRAY(0.5, 0.1);END.']) 
