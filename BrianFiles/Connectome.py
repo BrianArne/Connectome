@@ -208,7 +208,7 @@ for v in g.vs:
   else:
     node_color.append(list_cofc_colors[v["Layer"] % (len(list_cofc_colors)-1)])
 
-line_color = ['#FFFFFF' for v in g.vs]
+line_color = ['#000000' for v in g.vs]
 edge_colors=['#d4daff','#84a9dd', '#5588c8', '#6d8acf']
 
 Xn = [layt[k][0] for k in  range(L)]
@@ -230,6 +230,7 @@ for j, e in enumerate(E):
   b=[A, A/params[K], B/params[K], B]
   color=edge_colors[K]
   pts=BezierCv(b, nr=5)
+  # Sets text for hover of edge
   text=str(V[e[0]]['Layer'])+' to '+str(V[e[1]]['Node'])+' '+str(Weights[j])+' pts'
   mark=deCasteljau(b,0.9)
   edge_info.append(go.Scatter(x=[mark[0]], 
@@ -247,7 +248,7 @@ trace2=go.Scatter(x=Xn,
                   mode='markers',
                   name='',
                   marker=dict(symbol='circle', 
-                              size=15, 
+                              size=40, 
                               color=node_color, 
                               line=dict(color=line_color, width=0.5)),
                   text=labels,
@@ -274,7 +275,7 @@ height = 1500
 title = "Connectome Graph"
 
 layout=go.Layout(title=title,
-                font = dict(size=12),
+                font = dict(size=24),
                 showlegend = False,
                 autosize = False,
                 width = width,
@@ -285,7 +286,10 @@ layout=go.Layout(title=title,
                               r = 40,
                               b = 85,
                               t = 100),
-                hovermode = 'closest')
+                hovermode = 'closest',
+                # Makes image with no background color
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
 
 data = lines + edge_info + [trace2]
 fig = go.Figure(data=data, layout=layout)
