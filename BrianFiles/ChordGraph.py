@@ -101,7 +101,6 @@ class ChordGraph:
         self._hover_labels.append(title)
   # End create_hover_data();
 
-
   '''
   Used to create aesthetic curve from node to node
   '''
@@ -117,6 +116,8 @@ class ChordGraph:
 
   '''
   Creates data the defines edges and lines. Defines self._lines and self._edge_info
+
+  Must be called after self.init_graph() as it references self._graph
   '''
   def define_edge(self):
     Weights = map(int, self._graph.es["Weight"]) #local
@@ -186,7 +187,6 @@ class ChordGraph:
     return  k-1
   # End get_idx_interv();
 
-
   '''
   Initializes graph with verticies and edges
   '''
@@ -205,6 +205,8 @@ class ChordGraph:
   '''
   Defines JSON that determines graph output. Init _trace2 and _layout
   Responsible for most of the visual layout of the chord graph
+  
+  Must be called after self.init_graph() as it references self._vert_xy
   '''
   def init_scatter_json(self):
     n_verts = len(self._vert_xy)
