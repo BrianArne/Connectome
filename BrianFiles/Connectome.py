@@ -99,13 +99,12 @@ def query_outputs(outputs):
 #############################
 
 # Picks file to run
-data = query_file()
+data = query_test_file()
 data.construct_node_container()
 
 # Init. AdjacencyMatrix to generate all graph traverseals
 container = NodeContainer(data._node_container)
 connect = AdjacencyMatrix(container)
-#connect.fill_matrix();
 user_query = query_outputs(connect.get_output_nodes())
 
 # Creates all paths
@@ -116,14 +115,14 @@ edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
 # Create Atlas Connectivty Matrix, Freature Mapping, and .Node file
-# atlas = AtlasMatrix(sys.path[0] + "/Atlas Files/aal.csv", connect.get_input_nodes())
+atlas = AtlasMatrix(sys.path[0] + "/Atlas Files/aal.csv", connect.get_input_nodes())
 '''User chosen atlas file. Uncomment'''
-atlas = AtlasMatrix(query_atlas_file(), connect.get_input_nodes())
+# atlas = AtlasMatrix(query_atlas_file(), connect.get_input_nodes())
 
 # Graph Chord Diagram
 chord = ChordGraph(connect.get_nodes(), edges, connect.get_max_layer(), atlas)
 chord.draw()
 
 # Displays 3D surfice rendering
-# atlas.node is created by the AtlasMatrix constructor
-subprocess.call(['/home/workstation6/sw/surfice/Surf_Ice/surfice','-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'/data2/Connectome2018_project/BrianFiles/atlas.node\');SHADERXRAY(0.5, 0.1);END.']) 
+# NOTE: Path to SurfIce will be system dependent.
+subprocess.call([Globals.SURFICE_DIR,'-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'' + Globals.ATLASNODE_DIR + '\');SHADERXRAY(0.5, 0.1);END.']) 
