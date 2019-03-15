@@ -9,6 +9,7 @@ class AtlasMatrix:
     self._atlas_matrix = None
     self._regions_list = None
 
+    # Init functions
     self.create_atlas_region_list(file_name)
     self.add_features_to_matrix()
     self.create_surfice_node_file(input_nodes)
@@ -32,6 +33,9 @@ class AtlasMatrix:
       offset += 1
   # End add_features_to_matrix();
 
+  '''
+  Creates a list of rgions from the atlas file supplied
+  '''
   def create_atlas_region_list(self, file_name):
     with open(str(file_name)) as f:
         self._regions_list = [map(str, i.split(',')) for i in f]
@@ -53,7 +57,11 @@ class AtlasMatrix:
         l_nodes.append(draw_nodes[1])
 
     # Writes data to file
-    f = open("atlas.node", "w+")
+    try:
+      f = open("atlas.node", "w+")
+    except IOError:
+      print("Error opening atlas file. Terminating...")
+
     for index in l_nodes:
       reg = self._regions_list[index]
       x = reg[0]

@@ -104,6 +104,8 @@ class MatlabNodeParser(NodeParser):
         self._data = io.loadmat(self._file_name, squeeze_me = True)
     except IOError:
         print("Error loading file: " + self._file_name)
+        print("Terminating...")
+        exit()
     else:
         self._total_nodes = len(self._data[self._var_name])
   # End load_data();

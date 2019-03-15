@@ -18,6 +18,8 @@ class AdjacencyMatrix:
     self._node_container = node_container
     self._output_paths = {}
 
+    self.init_position_hash()
+
   # End __init__();
   
   '''

@@ -5,18 +5,43 @@ import plotly
 import plotly.graph_objs as go
 import subprocess
 
-from AtlasMatrix import AtlasMatrix
-from ChordGraph import ChordGraph
+from Containers.AtlasMatrix import AtlasMatrix
+from GUI.ChordGraph import ChordGraph
 from Containers.NodeContainer import NodeContainer
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Parsers.MatlabNodeParser import MatlabNodeParser
 from igraph import *
 
 '''
+Ask the user for a file path to atlas file
+'''
+def query_atlas_file():
+  atlas_file_path = raw_input("Please enter the relative location of the atlas file: ")
+  return sys.path[0] + atlas_file_path
+# End query_atlas_file()
+
+'''
+Ask the user for a file path and loads data
+'''
+def query_file():
+  file_path = raw_input("Please enter the relative location of matlab node file: ")
+  file_path = sys.path[0] + file_path
+  print(file_path)
+  var_name = raw_input("Which variable from " + file_path + " would you like to process? ")
+  parsed_data = MatlabNodeParser(file_path, var_name)
+  try:
+    parsed_data.load_data()
+  except IOError:
+    print("Bad user data. Terminating...")
+    exit()
+  return parsed_data
+# End query_file()
+
+'''
 Ask the user for a file and loads data
 @Returns NodeParser
 '''
-def query_file():
+def query_test_file():
   # File options
   var = input("Which test file? " + 
               "1) SetOne "+ 
@@ -53,7 +78,7 @@ def query_file():
       exit()
 
   return parsed_data
-# End query_file();
+# End query_test_file();
 
 '''
 Ask user forrequested outputs
@@ -80,7 +105,7 @@ data.construct_node_container()
 # Init. AdjacencyMatrix to generate all graph traverseals
 container = NodeContainer(data._node_container)
 connect = AdjacencyMatrix(container)
-connect.fill_matrix();
+#connect.fill_matrix();
 user_query = query_outputs(connect.get_output_nodes())
 
 # Creates all paths
@@ -91,7 +116,9 @@ edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
 # Create Atlas Connectivty Matrix, Freature Mapping, and .Node file
-atlas = AtlasMatrix("aal.csv", connect.get_input_nodes())
+# atlas = AtlasMatrix(sys.path[0] + "/Atlas Files/aal.csv", connect.get_input_nodes())
+'''User chosen atlas file. Uncomment'''
+atlas = AtlasMatrix(query_atlas_file(), connect.get_input_nodes())
 
 # Graph Chord Diagram
 chord = ChordGraph(connect.get_nodes(), edges, connect.get_max_layer(), atlas)
