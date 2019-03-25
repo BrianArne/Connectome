@@ -1,8 +1,9 @@
+import Globals
 import unittest
+
 from Containers.AdjacencyMatrix import AdjacencyMatrix
 from Containers.Node import Node
 from Containers.NodeContainer import NodeContainer
-import Globals
 
 
 class TestAdjacencyMatrix(unittest.TestCase):
