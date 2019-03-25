@@ -203,7 +203,6 @@ class TestMatlabNodeParser(unittest.TestCase):
     bad_load = MatlabNodeParser(bad_file, bad_var)
     with self.assertRaises(IOError):
       bad_load.load_data()
-    #self.assertRaises(SystemExit, bad_load.load_data())
 
     for c in self._containers:
       c.load_data()

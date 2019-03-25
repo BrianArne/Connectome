@@ -25,6 +25,7 @@ class AdjacencyMatrix:
   '''
   Checks if the input_node terminates before reaching original inputs
   @returns True if the input node has a corresponding node in the _nodes list
+  DEPRECATED: Nothing uses this method
   '''
   def check_termination(self, node_number, layer):
       layer_hash = self._layer_hash[layer]
@@ -79,6 +80,7 @@ class AdjacencyMatrix:
 
   '''
   Fills matrix to make adjacency matrix
+  DEPRICATED: Nothing uses this method
   '''
   def fill_matrix(self):
     self.construct_empty_matrix()
