@@ -35,6 +35,7 @@ class AtlasMatrix:
 
   '''
   Creates a list of rgions from the atlas file supplied
+  !Regions names will be strings terminating in \n
   '''
   def create_atlas_region_list(self, file_name):
     with open(str(file_name)) as f:
