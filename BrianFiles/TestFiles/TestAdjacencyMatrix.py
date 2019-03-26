@@ -41,8 +41,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
     self.assertEqual(7 ,len(adj_matrix.get_nodes()))
   # End test_init();
   
-  '''
-  DEPRICATED: Nothing uses this method
+  # DEPRICATED: Nothing uses this method
   def test_check_termination(self):
     cont = NodeContainer(self._test_nodes)
     matrix = AdjacencyMatrix(cont)
@@ -52,10 +51,10 @@ class TestAdjacencyMatrix(unittest.TestCase):
     matrix._layer_hash[2] = {1 : 3, 5 : 4}
     matrix._layer_hash[3] = {20 : 5}
 
-    self.assertTrue(matrix.check_termination(1, 3))
-    self.assertTrue(matrix.check_termination(2, 3))
-    self.assertTrue(matrix.check_termination(7, 3))
-    self.assertTrue(matrix.check_termination(30, 3))
+    self.assertTrue(matrix.check_termination(37, 1))
+    self.assertTrue(matrix.check_termination(40, 1))
+    self.assertTrue(matrix.check_termination(5, 2))
+    self.assertTrue(matrix.check_termination(20, 3))
 
     self.assertFalse(matrix.check_termination(100, 1))
     self.assertFalse(matrix.check_termination(4, 1))
@@ -63,7 +62,6 @@ class TestAdjacencyMatrix(unittest.TestCase):
     self.assertFalse(matrix.check_termination(6, 2))
     self.assertFalse(matrix.check_termination(21, 3))
   # End test_check_termination();
-  '''
 
   def test_construct_empty_matrix(self):
     adj_matrix = AdjacencyMatrix(self._test_container_one)

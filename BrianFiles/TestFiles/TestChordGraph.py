@@ -1,6 +1,7 @@
 import unittest
 
-class TestChordGraph():
+class TestChordGraph(unittest.TestCase):
+  '''
 
   def test_init():
     pass
@@ -61,6 +62,5 @@ class TestChordGraph():
     pass
 
   # End test_init_scatter_jasonarne();
-
-
+  '''
 # End Class TestChordGraph();

@@ -1,7 +1,7 @@
 import unittest
 
 class TestAtlasMatrix(unittest.TestCase):
-
+  '''
 
   def test_init():
     pass
@@ -22,5 +22,5 @@ class TestAtlasMatrix(unittest.TestCase):
     pass
 
   # End test_create_surfice_node_file();
-
+  ''' 
 # End Class TestAtlasMatrix();
