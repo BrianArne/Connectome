@@ -69,7 +69,7 @@ class AtlasMatrix:
       y = reg[1]
       z = reg[2]
       name = reg[3]
-      f.write(x + '\t' + y + '\t' + z + '\t' + str(1) + '\t' + str(2.2) + '\t' + name)
+      f.write(x + '\t' + y + '\t' + z + '\t' + str(15) + '\t' + str(2.2) + '\t' + name)
     f.close()
   # End create_surfice_node_file();
 

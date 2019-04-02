@@ -125,4 +125,4 @@ chord.draw()
 
 # Displays 3D surfice rendering
 # NOTE: Path to SurfIce will be system dependent.
-subprocess.call([Globals.SURFICE_DIR,'-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'' + Globals.ATLASNODE_DIR + '\');SHADERXRAY(0.5, 0.1);END.']) 
+subprocess.call([Globals.SURFICE_DIR,'-S', 'BEGIN RESETDEFAULTS;MESHLOAD(\'BrainMesh_ICBM152.mz3\');NODELOAD(\'' + Globals.ATLASNODE_DIR + '\');SHADERXRAY(0.5, 0.1);END.'])

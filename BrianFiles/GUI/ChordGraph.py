@@ -111,6 +111,8 @@ class ChordGraph:
     a=np.copy(b) #shallow copy of the list of control points 
     for r in range(1,N): 
       a[:N-r,:]=(1-t)*a[:N-r,:]+t*a[1:N-r+1,:]                             
+      #if r == 1:
+        #print(len(a[:N-r,:]))
     return a[0,:]
   # End deCasteljau();
 
@@ -159,8 +161,8 @@ class ChordGraph:
   '''
   @Returns the distance between 2 points A and B
   '''
-  def dist (self,A,B):
-    return np.linalg.norm(np.array(A)-np.array(B))
+  def dist (self, vert_a_xy, vert_b_xy):
+    return np.linalg.norm(np.array(vert_a_xy)-np.array(vert_b_xy))
   # End dist();
 
   '''
@@ -172,7 +174,7 @@ class ChordGraph:
     fig = go.Figure(data=data, layout=self._layout)
 
     if (not jupyter):
-      plotly.offline.plot(fig, filename="Connectome Graph")
+      plotly.offline.plot(fig, filename="ConnectomeGraph.html")
     else:
       plotly.offline.init_notebook_mode()
   # End draw();
@@ -180,9 +182,9 @@ class ChordGraph:
   '''
   Returns index of the interval the distance d belongs to
   '''
-  def get_idx_interv(self, d, D):
+  def get_idx_interv(self, vert_dist, dist_list):
     k=0
-    while(d>D[k]): 
+    while(vert_dist>dist_list[k]): 
       k+=1
     return  k-1
   # End get_idx_interv();
