@@ -20,9 +20,10 @@ Classes within the /GUI directory are responsible for building the chord diagram
 
 ## Dependencies
 The project dependencies are:
++ Igraph
 + NumPy
 + Plotly
-+ Igraph
++ Surf Ice
 
 The project currently runs for 2.7. No other versions of Python have been validated. Hoping to verify for Python 3.x soon.
 
