@@ -115,7 +115,7 @@ edges = connect.extract_unique_edges(user_query)
 edges.sort(key=lambda tup: tup[0])
 
 # Create Atlas Connectivty Matrix, Freature Mapping, and .Node file
-atlas = AtlasMatrix(sys.path[0] + "/Atlas Files/aal.csv", connect.get_input_nodes())
+atlas = AtlasMatrix(sys.path[0] + "/Atlas/aal.csv", connect.get_input_nodes())
 '''User chosen atlas file. Uncomment'''
 # atlas = AtlasMatrix(query_atlas_file(), connect.get_input_nodes())
 
