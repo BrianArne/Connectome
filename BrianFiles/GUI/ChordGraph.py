@@ -12,8 +12,8 @@ class ChordGraph:
   def __init__(self, nodes, edges, max_layer, atlas):
 
     # Visual Concerns
-    self._height = 1500
-    self._width = 1450
+    self._height = 850
+    self._width = 800
     self._list_cofc_colors = ['#b634bb',
                               '#ed2939',
                               '#72c7e7',
@@ -154,7 +154,7 @@ class ChordGraph:
       self._lines.append(go.Scatter(x=pts[:,0],
                   y=pts[:,1],
                   mode='lines',
-                  line=dict(color=color, shape='spline', width=Weights[j]),
+                  line=dict(color=color, shape='spline', width=3),
                   hoverinfo='none'))
   #End define_edge();
 
@@ -171,12 +171,18 @@ class ChordGraph:
   '''
   def draw(self, jupyter=False):
     data = self._lines + self._edge_info + [self._trace2]
-    fig = go.Figure(data=data, layout=self._layout)
 
-    if (not jupyter):
-      plotly.offline.plot(fig, filename="ConnectomeGraph.html")
+    '''No on click '''
+    #fig = go.Figure(data=data, layout=self._layout)
+
+    '''Inables on click events'''
+    fig = go.FigureWidget(data=data, layout=self._layout)
+
+    if (jupyter):
+      plotly.offline.init_notebook_mode(connected=True)
+      plotly.offline.iplot(fig, filename="ConnectomeGraph.html")
     else:
-      plotly.offline.init_notebook_mode()
+      plotly.offline.plot(fig, filename="ConnectomeGraph.html")
   # End draw();
 
   '''
@@ -221,8 +227,8 @@ class ChordGraph:
                       mode='markers',
                       name='',
                       marker=dict(symbol='circle', 
-                                  size=40, 
-                                  color=self._node_color, #call color method here
+                                  size=20, 
+                                  color=self._node_color,
                                   line=dict(color='#000000', width=0.5)),
                       text=self._hover_labels,
                       hoverinfo='text',
@@ -248,4 +254,14 @@ class ChordGraph:
                                   t = 100),
                     hovermode = 'closest')
   # End init_scatter_json();
+
+  '''
+  Changes the title of the graph from "Connectome" to the provided string
+  Calls init_scatter_json to reset go.Layout
+  '''
+  def set_title(self, string):
+    self._title = string
+    self.init_scatter_json()
+  # End set_title();
+
 # End ChordGraph
