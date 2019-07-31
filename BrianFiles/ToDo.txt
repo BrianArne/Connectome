@@ -1,15 +1,15 @@
 TODO:
 
 *** Highest Priority ***
-  1) Make drop down selection for region pairs in chord diagram
-  2) Recolor selected pairs from drop down in Surf Ice
+  1) Make drop down selection for region pairs in chord diagram - Done, different widget used.
+  2) Recolor selected pairs from drop down in Surf Ice - Done, very basic and could be improved to better differentiate selections, tested using Surf Ice v1.0.20190518 w/ Legacy OpenGL (si_refresh.sh created to refresh Surf Ice, but currently uses 'xdotool', an easy X11 scripting interface; will eventually change to just use X11 itself to avoid the need of installing that library, just select Surf Ice and hit Ctrl+R to refresh).
   4) User interface to select .matlab file
   5) Clean up Connectome.py
     -Move button related things somewhere appropriate
 
 *** Medium Priority ***
-  1) Add edge in Surf Ice between node regions selected from drop down
-  2) Determine how ipython (jupyter), plotly.FigureWidge, and Plotly.grah_obs work together
+  1) Add edge in Surf Ice between node regions selected from drop down - Done, currently basic.
+  2) Determine how ipython (jupyter), plotly.FigureWidge, and Plotly.graph_obs work together
   3) New file format parsers
   4) Matlab scripts to generate files
   5) Extract Class from Chord Graph
@@ -18,7 +18,7 @@ TODO:
   6) Load time for Plotly
     -Probably related to loading in full Plotly.js script @ runtime
   7) Error checking
-    -Zero nodes selected for redraw
+    -Zero nodes selected for redraw - currently if none selected, will draw whole graph; if unconnected output selected, will draw empty plot...
   8) Update testcases
   9) Do we want to redraw graph instead of creating another?
 
@@ -26,4 +26,4 @@ TODO:
   1) Dependency manager to automatically load up dependencies
     -$pip -r requirements.txt (might do the trick)
   2) Add code coverage tool to see what has and hasn't been tested (Coverage.py)
-  3) Move to Python 3.x
+  3) Move to Python 3.x - next objective to allow for file selection through ipywidget

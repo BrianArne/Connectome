@@ -1,6 +1,7 @@
 import numpy as np
 import plotly
 import plotly.graph_objs as go
+from copy import deepcopy
 
 from igraph import *
 
@@ -38,6 +39,7 @@ class ChordGraph:
     self._node_color = []
     self._trace2 = None
     self._vert_xy = []
+    self._orig_copy = None
 
 
     # Init functions
@@ -46,6 +48,7 @@ class ChordGraph:
     self.color_verts(max_layer)
     self.define_edge()
     self.init_scatter_json()
+    self._orig_copy = deepcopy(self._graph)
 
   # End __init__();
 
@@ -63,7 +66,91 @@ class ChordGraph:
     t=np.linspace(0, 1, nr)
     return np.array([self.deCasteljau(b, t[k]) for k in range(nr)]) 
   # End BezierCv();
-
+  
+  '''
+  Removes edges from ipython Graph object self._graph.
+  
+  Uses lists of indexes from _graph.vs pertaining to output vertices and input vertices NOT currently selected (vertices that are not to be shown).
+  '''
+  
+  def remove_edges(self, rm_outputs, rm_inputs):
+    #assumes last vertex will always be at the max layer
+    max_layer = self._graph.vs[-1:]['Layer'][0]
+    
+    translated_out_verts = self._graph.vs.select(Layer = 1, Node_in = rm_outputs)
+    translated_in_verts = self._graph.vs.select(rm_inputs)
+    
+    self.change_edges_from_outs(translated_out_verts)
+    self.change_edges_from_ins(translated_in_verts)
+    
+    self._graph.delete_edges(Weight = -1)
+    self._graph.vs.select(_degree = 0).delete()
+  # End remove_edges();
+  
+  
+  '''
+  Iterates through list of unselected output vertices, recursively traversing and marking edges to be deleted.
+  
+  Marks edges by changing their weight to -1, which may cause an issue if data being presented could possibly yield negative weights. Would defining as None work?
+  '''
+  def change_edges_from_outs(self, vertex_seq):
+    for v in vertex_seq:
+        inputs = self._graph.es.select(_target = v.index)
+        prev_trav_ins = inputs.select(Weight = -1)
+        if len(inputs) == len(prev_trav_ins): #if layer 1 or 'higher' exclusive input after previous traversals
+            edges = self._graph.es.select(_source = v.index)
+            if len(edges) == 0: #'highest' layer
+                continue
+            else: #needed?
+                edges['Weight'] = -1
+                next_vertex_seq = self._graph.vs.select(e.target for e in edges)
+                self.change_edges_from_outs(next_vertex_seq)
+        else:
+            continue
+    
+  # End change_edges_from_outs();
+  
+  '''
+  Iterates through list of unselected input vertices, recursively traversing and marking edges to be deleted.
+  
+  Marks edges by changing their weight to -1, which may cause an issue if data being presented could possibly yield negative weights.  Would defining as None work?
+  '''
+  def change_edges_from_ins(self, vertex_seq):
+    for v in vertex_seq:
+        outputs = self._graph.es.select(_source = v.index, Weight = 1)
+        prev_trav_outs = outputs.select(Weight = -1)
+        if len(outputs) == len(prev_trav_outs): #max layer or 'lower' exclusive output after previous traversals
+            edges = self._graph.es.select(_target = v.index)
+            if len(edges) == 0: #'lowest' layer (layer 1)
+                continue
+            else: #needed?
+                edges['Weight'] = -1
+                next_vertex_seq = self._graph.vs.select(e.source for e in edges)
+                self.change_edges_from_ins(next_vertex_seq)
+        else:
+            continue
+    
+  # End change_edges_from_ins();
+  
+  '''
+  Draws current state of _graph object (to be called after manipulating vs and es), then resets to _graph state defined on ChordGraph initiation.
+  '''
+  
+  def subdraw(self, max_layer, atlas, jupyter):
+    self._node_color = []
+    self._vert_xy = self._graph.layout('circular')
+    self.create_hover_data(max_layer, atlas)
+    self.color_verts(max_layer)
+    self.define_edge()
+    self.init_scatter_json()
+    
+    self.draw(jupyter)
+    
+    self._graph = deepcopy(self._orig_copy)
+  # End subdraw();
+  
+  
+  
   '''
   Colors Verticies. Maroon always inputs. Gold always outputs.
 
@@ -85,6 +172,8 @@ class ChordGraph:
   Must be called after self.init_graph() as it references self._graph
   '''
   def create_hover_data(self, max_layer, atlas):
+    if len(self._hover_labels) != 0:
+        self._hover_labels = []
     V = list(self._graph.vs)
     # Creates hover labels for verticies
     for v in V:
@@ -92,8 +181,19 @@ class ChordGraph:
       if v["Layer"] is max_layer:
         connect_pair = atlas._feature_to_matrix_hash[v["Node"]]
         reg_one = atlas._regions_list[connect_pair[0]][3].strip('\n')
-        reg_two = atlas._regions_list[connect_pair[1]][3]
+        reg_two = atlas._regions_list[connect_pair[1]][3].strip('\n')
+        
         title = reg_one + " <--> " + reg_two
+        
+        selected_lines = [(atlas._l_nodes.index(connect_pair[0]),atlas._l_nodes.index(connect_pair[1]))]
+        
+        #TODO: change_node_file_values and change_edge_file_values would work
+        #more efficiently here if they were both called once at the end of this
+        #"for v in V:" loop
+        if(self._orig_copy == None): #if initializing class/not selecting a sub-graph...
+            atlas.change_node_file_values(selected_lines, "c+1.0,s=2.2")
+            atlas.change_edge_file_values(selected_lines, 0.1)
+        
         self._hover_labels.append(title)
       # Hovering shows node number and layer
       else:
@@ -122,6 +222,10 @@ class ChordGraph:
   Must be called after self.init_graph() as it references self._graph
   '''
   def define_edge(self):
+    if len(self._edge_info) != 0:
+        self._edge_info = []
+    if len(self._lines) != 0:
+        self._lines = []
     Weights = map(int, self._graph.es["Weight"]) #local
     Dist=[0, self.dist([1,0], 2*[np.sqrt(2)/2]), np.sqrt(2),
           self.dist([1,0],  [-np.sqrt(2)/2, np.sqrt(2)/2]), 2.0] #local
@@ -205,7 +309,7 @@ class ChordGraph:
     g.vs["Layer"] = [l._layer for l in nodes]
     g.vs["Node"] = [n._node_number for n in nodes]
     g.es["Weight"] = 1
-    g.vs.select(_degree=0).delete() # Removes blank nodes
+    g.vs.select(_degree=0, Layer_ne = 1).delete() #removes blank non-output nodes
     self._vert_xy = g.layout('circular')
     self._graph = g
   # End init_graph();
@@ -217,6 +321,8 @@ class ChordGraph:
   Must be called after self.init_graph() as it references self._vert_xy
   '''
   def init_scatter_json(self):
+    if self._trace2 != None:
+        self._trace2 = None
     n_verts = len(self._vert_xy)
 
     Xn = [self._vert_xy[k][0] for k in  range(n_verts)]
